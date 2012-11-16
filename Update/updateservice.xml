@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updateFiles>
+  <file path="AutoUpdater.dll"  url="http://update.iyond.com/CompanyClientApplication/AutoUpdater.zip" lastver="1.0.0.0" size="28672" needRestart="true" />
+  <file path="CompanyClient.exe"  url="http://update.iyond.com/CompanyClientApplication/CompanyClient.zip" lastver="1.1.0.0" size="888832 " needRestart="true" />
+  <file path="HappyFenClient.dll"  url="http://update.iyond.com/CompanyClientApplication/HappyFenClient.zip" lastver="1.0.0.0" size="24576" needRestart="true" />
+  <file path="NetworkProvider.dll"  url="http://update.iyond.com/CompanyClientApplication/NetworkProvider.zip" lastver="1.0.0.0" size="32768" needRestart="true" />
+  <file path="Utility.dll"  url="http://update.iyond.com/CompanyClientApplication/Utility.zip" lastver="1.0.0.0" size="20480" needRestart="true" />
+  <file path="Wizard.dll"  url="http://update.iyond.com/CompanyClientApplication/Wizard.zip" lastver="1.0.0.0" size="24576"  needRestart="true" />
+</updateFiles>
