@@ -155,11 +155,13 @@ void CUpdateDlg::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	//OnOK();
 	//g_Logger.Debug(__FILE__,__LINE__,"DDD%s","11");
+	Init();
 }
 
 
 void CUpdateDlg::Init()
 {
 	//g_Logger.StartSystem(UPDATE_PROPERTIES);
-	LOGRECORD("dd");
+	//LOGRECORD("dd");
+	
 }

@@ -6,4 +6,5 @@
 //log ÅäÖÃÎÄ¼ş
 #define UPDATE_PROPERTIES "UPDATE_properties"
 
+#define UPDATEXML _T("http://fjchenqian.3322.org/updateservice.xml")
 #endif
