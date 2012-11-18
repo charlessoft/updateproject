@@ -2,7 +2,7 @@
 //
 
 #pragma once
-
+#include "UpdateMgr.h"
 
 // CUpdateDlg dialog
 class CUpdateDlg : public CDialog
@@ -19,6 +19,8 @@ public:
 
 
 	void Init();
+private:
+	CUpdateMgr m_UpdateMgr;
 // Implementation
 protected:
 	HICON m_hIcon;

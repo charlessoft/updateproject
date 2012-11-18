@@ -52,6 +52,11 @@
 
 #include "TypeDefine.h"
 
+#include <string>
+#include <vector>
+#include <list>
+#include <map>
+using namespace std;
 
 #include "tinyxml/tinystr.h"
 #include "tinyxml/tinyxml.h"
@@ -63,7 +68,7 @@
 
 
 #ifdef _DEBUG
-	#pragma comment(lib,"I:/MyProjects/workplace/Update/lib/systemlib/dbg/SystemLib.lib")
+	#pragma comment(lib,"../lib/systemlib/dbg/SystemLib.lib")
 #else
 	#pragma comment(lib,"../lib/systemlib/rel/SystemLib.lib")
 #endif
@@ -72,16 +77,16 @@
 
 
 
-#include "I:/MyProjects/workplace/Curl/curl-7.28.0/include/curl/curl.h"
+#include "../lib/curl/include/curl/curl.h"
 
 #pragma comment(lib,"ws2_32.lib")
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib,"wldap32.lib")
 
 #ifdef _DEBUG
-#pragma comment(lib,"I:/MyProjects/workplace/Curl/Lib/curl/debug-ssl-zlib/libcurld.lib")
+#pragma comment(lib,"../Lib/curl/debug-ssl-zlib/libcurld.lib")
 #else
-#pragma comment(lib,"I:/MyProjects/workplace/Curl/Lib/curl/release-ssl-zlib/libcurl.lib")
+#pragma comment(lib,"../Lib/curl/release-ssl-zlib/libcurl.lib")
 #endif
 
 

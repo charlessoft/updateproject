@@ -9,6 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
+#include "SingleDownload.h"
 
 // CAboutDlg dialog used for App About
 
@@ -161,7 +162,56 @@ void CUpdateDlg::OnBnClickedOk()
 
 void CUpdateDlg::Init()
 {
-	//g_Logger.StartSystem(UPDATE_PROPERTIES);
+	g_Logger.StartSystem(UPDATE_PROPERTIES);
+
 	//LOGRECORD("dd");
+	g_Logger.Debug(__FILE__,__LINE__,"hello");
+
+// 	CSingleDownload SingleDown;
+// 	SingleDown.Download(UPDATEXML,"C:\\tmpfile.xml",5);
+// 	string strBuf = SingleDown.GetMemBuf();
+//  	TiXmlDocument doc;//( "demo.xml" );
+//  	doc.Parse(strBuf.c_str());
+// 	TiXmlElement* rootElement = doc.RootElement();  //SchoolÔªËØ  
+// 	TiXmlElement* pElement = rootElement->ToElement();
+// 	TiXmlNode* pchild = rootElement->FirstChild(); 
+// 	//string strValue = rootElement->ValueStr();
+// 	while(pchild)
+// 	{
+// 		int t = pchild->Type();
+// 
+// 		if( t == TiXmlNode::TINYXML_ELEMENT)
+// 		{
+// 			//g_Logger.Debug(__FILE__,__LINE__,"TiXmlNode::TINYXML_ELEMENT");
+// 			TiXmlElement *pp= pchild->ToElement();
+// 			//string strValue = pchild->ValueStr();
+// 			string str = pchild->ToElement()->Value();
+// 			//string strFirstValue = pp->FirstAttribute()->Name();
+// 			//pp->NextSiblingElement()
+// 			string strValue;
+// 			pp->QueryValueAttribute("path",&strValue);
+// 			pp->QueryValueAttribute("url",&strValue);
+// 			pp->QueryValueAttribute("lastver",&strValue);
+// 			pp->QueryValueAttribute("needRestart",&strValue);
+// 				
+// 
+// // 			TiXmlText *pTxt  = pchild->ToText();
+// // 			string sss = pTxt->Value();
+// 		}
+// 		else if( t == TiXmlNode::TINYXML_TEXT)
+// 		{               
+// 			string str =pchild->Value();
+// 		}       
+// 		pchild = pchild->NextSibling();                                          
+// 
+// 	}
+	
+
+	//CUpdateMgr UpdateMgr;
+	//UpdateMgr.ParseLocalXml()
+
+	BOOL bret = m_UpdateMgr.DownLoadServerUpdateXmlFile();
+
+
 	
 }
