@@ -7,7 +7,7 @@
 #define UPDATE_PROPERTIES "UPDATE_properties"
 
 //#define UPDATEXML _T("http://fjchenqian.3322.org/updateservice.xml")
-#define UPDATEXML _T("http://localhost/updateservice.xml")
+#define UPDATEXML _T("http://10.142.49.127/updateservice.xml")
 
 
 
