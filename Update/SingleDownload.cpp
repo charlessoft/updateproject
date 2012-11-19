@@ -73,7 +73,7 @@ bool CSingleDownload::Download(CURL * curl,char* url,long timeout)
 	SD_curl_easy_setopt_EXT(curl, CURLOPT_TIMEOUT, timeout,res);
 	//设置URL地址错误 重连N次后推出
 	SD_curl_easy_setopt_EXT(curl, CURLOPT_CONNECTTIMEOUT, timeout,res);
-
+	return true;
 }
 
 
@@ -120,27 +120,13 @@ bool CSingleDownload::DownLoadByMemory(char *url, long timeout)
  	if(NULL == curl)
  		return false;
 
-	//打开待写文件
-	//outfile = fopen("C:\\22222.txt", "wb");
-	//if(NULL== outfile)
-	//	return false;
 
-	////设置URL地址
-	//SD_curl_easy_setopt_EXT(curl, CURLOPT_URL, url,res);
-	////设置写入的文件指针
+	//设置buffer指针
 	SD_curl_easy_setopt_EXT(curl, CURLOPT_WRITEDATA, &m_buffer,res);
-	////设置写入回调函数
+	//设置写入回调函数
 	SD_curl_easy_setopt_EXT(curl, CURLOPT_WRITEFUNCTION, Single_WriteFunc_Mem,res);
-	////设置无进程函数
-	//SD_curl_easy_setopt_EXT(curl, CURLOPT_NOPROGRESS, FALSE,res);
-	////设置进程回调函数
-	//SD_curl_easy_setopt_EXT(curl, CURLOPT_PROGRESSFUNCTION, Single_ProgressFunc,res);
-	////设置进程回调函数传的自定义参
-	//SD_curl_easy_setopt_EXT(curl, CURLOPT_PROGRESSDATA, this,res);
-	////设置下载速度=0时 N次退出
-	//SD_curl_easy_setopt_EXT(curl, CURLOPT_TIMEOUT, timeout,res);
-	////设置URL地址错误 重连N次后推出
-	//SD_curl_easy_setopt_EXT(curl, CURLOPT_CONNECTTIMEOUT, timeout,res);
+
+	//其他信息
 	Download(curl,url,timeout);
 
  
@@ -152,10 +138,8 @@ bool CSingleDownload::DownLoadByMemory(char *url, long timeout)
   		g_Logger.Error(__FILE__,__LINE__,"curl result %s\n",curl_easy_strerror(res));
   		return false;								
   	}
-//	fclose(outfile);
-//	outfile=NULL;
-// AfxMessageBox(m_buffer.c_str());
+
  	curl_easy_cleanup(curl);
  	curl=NULL;
-	return false;
+	return true;
 }

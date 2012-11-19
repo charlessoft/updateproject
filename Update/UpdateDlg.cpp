@@ -207,10 +207,11 @@ void CUpdateDlg::Init()
 // 	}
 	
 
-	//CUpdateMgr UpdateMgr;
+	CUpdateMgr UpdateMgr;
 	//UpdateMgr.ParseLocalXml()
+	UpdateMgr.IsNeedUpdate();
 
-	BOOL bret = m_UpdateMgr.DownLoadServerUpdateXmlFile();
+	//BOOL bret = m_UpdateMgr.DownLoadServerUpdateXmlFile();
 
 
 	
