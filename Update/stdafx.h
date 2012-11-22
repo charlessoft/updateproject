@@ -56,7 +56,10 @@
 #include <vector>
 #include <list>
 #include <map>
+#include "stdString.h"
 using namespace std;
+
+#include <atlbase.h>
 
 #include "tinyxml/tinystr.h"
 #include "tinyxml/tinyxml.h"
@@ -90,8 +93,8 @@ using namespace std;
 #endif
 
 
-
-
+#include <Dbghelp.h>
+#pragma comment(lib,"Dbghelp.lib")
 
 
 #ifdef _UNICODE

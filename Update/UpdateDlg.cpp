@@ -49,6 +49,7 @@ END_MESSAGE_MAP()
 
 CUpdateDlg::CUpdateDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CUpdateDlg::IDD, pParent)
+	, m_txtUpdateLst(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -56,6 +57,7 @@ CUpdateDlg::CUpdateDlg(CWnd* pParent /*=NULL*/)
 void CUpdateDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_TXTUPDATELST, m_txtUpdateLst);
 }
 
 BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
@@ -97,7 +99,8 @@ BOOL CUpdateDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-
+	//Init();
+	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -167,49 +170,32 @@ void CUpdateDlg::Init()
 	//LOGRECORD("dd");
 	g_Logger.Debug(__FILE__,__LINE__,"hello");
 
-// 	CSingleDownload SingleDown;
-// 	SingleDown.Download(UPDATEXML,"C:\\tmpfile.xml",5);
-// 	string strBuf = SingleDown.GetMemBuf();
-//  	TiXmlDocument doc;//( "demo.xml" );
-//  	doc.Parse(strBuf.c_str());
-// 	TiXmlElement* rootElement = doc.RootElement();  //SchoolÔªËØ  
-// 	TiXmlElement* pElement = rootElement->ToElement();
-// 	TiXmlNode* pchild = rootElement->FirstChild(); 
-// 	//string strValue = rootElement->ValueStr();
-// 	while(pchild)
-// 	{
-// 		int t = pchild->Type();
-// 
-// 		if( t == TiXmlNode::TINYXML_ELEMENT)
-// 		{
-// 			//g_Logger.Debug(__FILE__,__LINE__,"TiXmlNode::TINYXML_ELEMENT");
-// 			TiXmlElement *pp= pchild->ToElement();
-// 			//string strValue = pchild->ValueStr();
-// 			string str = pchild->ToElement()->Value();
-// 			//string strFirstValue = pp->FirstAttribute()->Name();
-// 			//pp->NextSiblingElement()
-// 			string strValue;
-// 			pp->QueryValueAttribute("path",&strValue);
-// 			pp->QueryValueAttribute("url",&strValue);
-// 			pp->QueryValueAttribute("lastver",&strValue);
-// 			pp->QueryValueAttribute("needRestart",&strValue);
-// 				
-// 
-// // 			TiXmlText *pTxt  = pchild->ToText();
-// // 			string sss = pTxt->Value();
-// 		}
-// 		else if( t == TiXmlNode::TINYXML_TEXT)
-// 		{               
-// 			string str =pchild->Value();
-// 		}       
-// 		pchild = pchild->NextSibling();                                          
-// 
-// 	}
+// 	CSingleDown
 	
 
 	CUpdateMgr UpdateMgr;
 	//UpdateMgr.ParseLocalXml()
-	UpdateMgr.IsNeedUpdate();
+	UPDATE_ERROR UpdateErrCode = (UPDATE_ERROR)UpdateMgr.IsNeedUpdate();
+	switch(UpdateErrCode)
+	{
+	case NEEDUPDATE:
+		{
+ 			vector<MULTI_DOWNLOAD_INFO*> UpdateLst = UpdateMgr.GetUpdateList();
+ 			vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
+ 			for (Iter = UpdateLst.begin();Iter != UpdateLst.end();++Iter)
+ 			{
+ 				LPMULTI_DOWNLOAD_INFO lpUpdateInfo = (MULTI_DOWNLOAD_INFO*)*Iter;
+ 				//m_txtUpdateLst+=lpServerXmlInfo->fileName.c_str();
+				m_txtUpdateLst+=lpUpdateInfo->filename;
+ 				m_txtUpdateLst+="\r\n";
+ 			}
+ 			//UpdateMgr.Update();
+			break;
+		}
+	}
+	
+	UpdateData(FALSE);
+
 
 	//BOOL bret = m_UpdateMgr.DownLoadServerUpdateXmlFile();
 

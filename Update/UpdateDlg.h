@@ -33,4 +33,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOk();
+public:
+	CString m_txtUpdateLst;
+
+	//检查是否更新线程
+	static UINT MyCheckUpdateThread(LPVOID lpParam);
+	UINT MyCheckUpdateThreadProc();
+
 };
