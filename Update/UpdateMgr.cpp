@@ -60,11 +60,11 @@ void CUpdateMgr::ParseXml(string xml,ClientType nClientType,ParseType nParseType
 	//TiXmlElement xmlElement = doc.GetChar()
 	TiXmlElement* rootElement = doc.RootElement();  //School元素  
 	TiXmlElement* pElement = rootElement->ToElement();
-	TiXmlNode* pchild = rootElement->FirstChild(); 
+ 	TiXmlNode* pchild = rootElement->FirstChild(); 
 	switch(nClientType)
 	{
 	case SERVER:
-		ParseServerXml(pchild);
+		ParseServerXml(pElement);
 		break;
 	case LOCAL:
 		ParseLocalXml(pchild);
@@ -75,34 +75,45 @@ void CUpdateMgr::ParseXml(string xml,ClientType nClientType,ParseType nParseType
 }
 void CUpdateMgr::ParseServerXml(TiXmlNode* xmlNode)
 {
-// 
+
 	ClearServerXmlMap();
  	LPSERVER_XML_INFO lpServerXmlInfo = NULL;
-
+	//string serverXmlUpdateTime;
 	while(xmlNode)
 	{
 		int t = xmlNode->Type();
 
 		if(t == TiXmlNode::TINYXML_ELEMENT)
 		{
-			//g_Logger.Debug(__FILE__,__LINE__,"TiXmlNode::TINYXML_ELEMENT");
-			TiXmlElement *pp= xmlNode->ToElement();
-			//string strValue = pchild->ValueStr();
-			string str = xmlNode->ToElement()->Value();
+			TiXmlNode* xmlChildNode = xmlNode->FirstChild();
+			if (xmlChildNode)
+			{
+				TiXmlElement *pp= xmlNode->ToElement();
+				pp->QueryValueAttribute(FILE_UPDATETIME,&m_serverUpdateTime);
+				ParseServerXml(xmlChildNode);
+			}
+			else
+			{
+				//g_Logger.Debug(__FILE__,__LINE__,"TiXmlNode::TINYXML_ELEMENT");
+				TiXmlElement *pp= xmlNode->ToElement();
+				//string strValue = pchild->ValueStr();
+				string str = xmlNode->ToElement()->Value();
 
-			string strValue;
+				string strValue;
 
-			lpServerXmlInfo = new SERVER_XML_INFO;
-			memset(lpServerXmlInfo,0,sizeof(SERVER_XML_INFO));
+				lpServerXmlInfo = new SERVER_XML_INFO;
+				memset(lpServerXmlInfo,0,sizeof(SERVER_XML_INFO));
 
-			pp->QueryValueAttribute(FILE_PATH,&lpServerXmlInfo->fileName);
-			pp->QueryValueAttribute(FILE_URL,&lpServerXmlInfo->url);
-			pp->QueryValueAttribute(FILE_LASTVER,&lpServerXmlInfo->lastVersion);
-			pp->QueryBoolAttribute(FILE_NEEDRESTART,&lpServerXmlInfo->needRestart);
-			pp->QueryValueAttribute(FILE_MD5,&lpServerXmlInfo->md5);
+				pp->QueryValueAttribute(FILE_PATH,&lpServerXmlInfo->fileName);
+				pp->QueryValueAttribute(FILE_URL,&lpServerXmlInfo->url);
+				pp->QueryValueAttribute(FILE_LASTVER,&lpServerXmlInfo->lastVersion);
+				pp->QueryBoolAttribute(FILE_NEEDRESTART,&lpServerXmlInfo->needRestart);
+				pp->QueryValueAttribute(FILE_MD5,&lpServerXmlInfo->md5);
+				//pp->QueryValueAttribute(FILE_UPDATETIME,&lpServerXmlInfo->updateTime);
 
-			m_MapServerXmlInfo.insert(pair<string,SERVER_XML_INFO*>(lpServerXmlInfo->fileName,lpServerXmlInfo));
+				m_MapServerXmlInfo.insert(pair<string,SERVER_XML_INFO*>(lpServerXmlInfo->fileName,lpServerXmlInfo));
 
+			}
 
 		}
 		else if( t == TiXmlNode::TINYXML_TEXT)
@@ -153,19 +164,20 @@ void CUpdateMgr::ParseLocalXml(TiXmlNode* xmlNode)
 
 
 
+//删除服务器 map 迭代删除
 void CUpdateMgr::ClearServerXmlMap()
 {
-	//删除服务器 map 迭代删除
-	map<string,SERVER_XML_INFO*>::iterator iter;
+	map<string,SERVER_XML_INFO*>::iterator iter=NULL;
 	for (iter=m_MapServerXmlInfo.begin();iter!=m_MapServerXmlInfo.end();)
 	{
 		m_MapServerXmlInfo.erase(iter++);
 	}
 }
 
+
+//删除本地 map 迭代删除
 void CUpdateMgr::ClearLocalXmlMap()
 {
-	//删除本地 map 迭代删除
 	map<string,LOCAL_XML_INFO*>::iterator iter;
 	for (iter=m_MapLocalXmlInfo.begin();iter!=m_MapLocalXmlInfo.end();)
 	{
@@ -175,22 +187,14 @@ void CUpdateMgr::ClearLocalXmlMap()
 
 BOOL CUpdateMgr::Update()
 {
-//return TRUE;
-
-	//MULTI_DOWNLOAD_INFO data[2]=
-	//{
-	//	{_T("a.html"),"http://dow111111111.com",NULL,false},
-	//	{_T("a.html"),"http://www.baidu.com",NULL,false},
-	//};
-
 
 	bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),10);
-	if (bRet)
-	{
-		AfxMessageBox(_T("true"));
-	}
-	else
-		AfxMessageBox(_T("fail"));
+	//if (bRet)
+	//{
+	//	AfxMessageBox(_T("true"));
+	//}
+	//else
+	//	AfxMessageBox(_T("fail"));
 	return TRUE;
 }
 
@@ -222,6 +226,7 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 	map<string,SERVER_XML_INFO*>::iterator ServerIter;
 	map<string,LOCAL_XML_INFO*>::iterator LocalIter;
 	BOOL bAppendLst=FALSE;
+	CString strCurDirectory;
 	for(ServerIter = m_MapServerXmlInfo.begin(); ServerIter != m_MapServerXmlInfo.end(); ServerIter++)
 	{
 		SERVER_XML_INFO* lpSerXmlInfo =(SERVER_XML_INFO*)ServerIter->second;
@@ -242,6 +247,7 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			//m_UpdateList.push_back(ServerIter->second);
 			bAppendLst = TRUE;
 		}
+
 		if (bAppendLst)
 		{
 			USES_CONVERSION;
@@ -251,16 +257,15 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			memset(lpMultiDownLoad,0,sizeof(MULTI_DOWNLOAD_INFO));
 
 			//创建时间
-			SYSTEMTIME st;
-			::GetLocalTime(&st);
-			TCHAR buf[32];
-			_stprintf_s(buf,32,_T("%04d-%02d-%02d-%02d-%02d-%02d"), st.wYear, st.wMonth, st.wDay,st.wHour,st.wMinute,st.wSecond);
+			//SYSTEMTIME st;
+			//::GetLocalTime(&st);
+			//TCHAR buf[32];
+			//_stprintf_s(buf,32,_T("%04d-%02d-%02d-%02d-%02d-%02d"), st.wYear, st.wMonth, st.wDay,st.wHour,st.wMinute,st.wSecond);
 
 			wstring wsCurDirectory;
 			CEnvironment::Env_GetCurrentDirectoryW(wsCurDirectory);
-			CString strCurDirectory;
-			strCurDirectory.Format(_T("UpDate_%s\\%s\\"),wsCurDirectory.c_str(),buf);
-			MakeSureDirectoryPathExists(W2A(strCurDirectory.GetBuffer(0)));
+	
+			strCurDirectory.Format(_T("%s\\UpDate_%s\\"),wsCurDirectory.c_str(),s2ws(m_serverUpdateTime).c_str());
 
 #ifdef _UNICODE
 			_tcscpy(lpMultiDownLoad->filename,A2W(lpSerXmlInfo->fileName.c_str()));
@@ -279,7 +284,22 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 
 	if (m_UpdateList.size()>0)
 	{
-		return NEEDUPDATE;
+
+		MakeSureDirectoryPathExists(W2A(strCurDirectory.GetBuffer(0)));
+		//return NEEDUPDATE;
 	}
-	return DO_NOT_NEEDUPDATE;
+	return SendMessage(AfxGetMainWnd()->m_hWnd, UM_UPDATE,NULL,NULL);
+	//return DO_NOT_NEEDUPDATE;
+}
+
+UINT CUpdateMgr::MyUpdateDownLoadThread(LPVOID lpParam)
+{
+	CUpdateMgr* pUpdateMgr = (CUpdateMgr*)lpParam;
+	return pUpdateMgr->MyUpdateDownLoadThreadProc();
+}
+
+UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
+{
+	Update();
+	return 1;
 }

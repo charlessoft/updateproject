@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDOK, &CUpdateDlg::OnBnClickedOk)
+	ON_MESSAGE(UM_UPDATE, OnUpdateList)//注意这条语句的后面没有分号
 END_MESSAGE_MAP()
 
 
@@ -100,7 +101,7 @@ BOOL CUpdateDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 	//Init();
-	
+	Init();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -159,7 +160,7 @@ void CUpdateDlg::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	//OnOK();
 	//g_Logger.Debug(__FILE__,__LINE__,"DDD%s","11");
-	Init();
+	m_UpdateMgr.Update();
 }
 
 
@@ -173,14 +174,14 @@ void CUpdateDlg::Init()
 // 	CSingleDown
 	
 
-	CUpdateMgr UpdateMgr;
+	
 	//UpdateMgr.ParseLocalXml()
-	UPDATE_ERROR UpdateErrCode = (UPDATE_ERROR)UpdateMgr.IsNeedUpdate();
+	UPDATE_ERROR UpdateErrCode = (UPDATE_ERROR)m_UpdateMgr.IsNeedUpdate();
 	switch(UpdateErrCode)
 	{
 	case NEEDUPDATE:
 		{
- 			vector<MULTI_DOWNLOAD_INFO*> UpdateLst = UpdateMgr.GetUpdateList();
+ 			vector<MULTI_DOWNLOAD_INFO*> UpdateLst = m_UpdateMgr.GetUpdateList();
  			vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
  			for (Iter = UpdateLst.begin();Iter != UpdateLst.end();++Iter)
  			{
@@ -201,4 +202,21 @@ void CUpdateDlg::Init()
 
 
 	
+}
+
+LRESULT CUpdateDlg::OnUpdateList(WPARAM wParam,LPARAM lParam){
+	
+
+	vector<MULTI_DOWNLOAD_INFO*> UpdateLst = m_UpdateMgr.GetUpdateList();
+	vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
+	for (Iter = UpdateLst.begin();Iter != UpdateLst.end();++Iter)
+	{
+		LPMULTI_DOWNLOAD_INFO lpUpdateInfo = (MULTI_DOWNLOAD_INFO*)*Iter;
+		//m_txtUpdateLst+=lpServerXmlInfo->fileName.c_str();
+		m_txtUpdateLst+=lpUpdateInfo->filename;
+		m_txtUpdateLst+="\r\n";
+	}
+	//UpdateMgr.Update();
+	UpdateData(FALSE);
+	return 0;
 }

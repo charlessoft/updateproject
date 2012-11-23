@@ -3,14 +3,14 @@
 #include "MultiDownload.h"
 typedef enum ClientType
 {
-	SERVER,
-	LOCAL
+	SERVER,//解析服务器xml
+	LOCAL //解析本地xml
 };
 
 typedef enum ParseType 
 {
-	PARSE_TYPE_FILE,
-	PARSE_TYPE_MEMORY
+	PARSE_TYPE_FILE, //解析类型,File
+	PARSE_TYPE_MEMORY //解析类型,Memory
 };
 
 typedef enum UPDATE_ERROR
@@ -19,18 +19,27 @@ typedef enum UPDATE_ERROR
 	SERVER_DEFINE, //服务器拒绝
 	DO_NOT_NEEDUPDATE //不需要更新
 };
+
+
 class CUpdateMgr
 {
 public:
 	CUpdateMgr(void);
 public:
 	~CUpdateMgr(void);
+	//解析xml 
 	void ParseXml(string xml,ClientType nClientType,ParseType nParseType);
 	bool DownLoadServerUpdateXmlFile();
+
+	//是否需要更新
 	int IsNeedUpdate();
+	//获取服务端xml信息 buff
 	string GetServerUpdateXmlBuf();
 
+	//执行更新下载文件
 	BOOL Update();
+
+	//获取更新列表
 	vector<MULTI_DOWNLOAD_INFO*> GetUpdateList(){return m_UpdateList;}
 
 private:
@@ -45,16 +54,24 @@ private:
 	list<LOCAL_XML_INFO*> m_LocalXmlList;
 	map<string,SERVER_XML_INFO*> m_MapServerXmlInfo;
 	map<string,LOCAL_XML_INFO*> m_MapLocalXmlInfo;
-	//map<string,SERVER_XML_INFO*> m_MapUpdateXml;
-	
+
 	vector<MULTI_DOWNLOAD_INFO*> m_UpdateList;
 
+	string m_serverUpdateTime;
+	//单个文件和多个文件下载
 	CSingleDownload m_SingleDownLoad;
 	MultiDownload	m_MultiDownLoad;
 
 
 	UPDATE_ERROR m_UpdateERR;
+	
+	
+	//检查是否需要更新的线程
 	static UINT MyCheckUpdateThread(LPVOID lpParam);
-
 	UINT MyCheckUpdateThreadProc();
+
+	//下载线程
+	static UINT MyUpdateDownLoadThread(LPVOID lpParam);
+	UINT MyUpdateDownLoadThreadProc();
+
 };

@@ -236,7 +236,7 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 					if(0==strcmp(lpDownLoadInfo->url,url))
 					{
 						//¹Ø±ÕÎÄ¼þ
-						fclose(lpDownLoadInfo->fp);
+						//fclose(lpDownLoadInfo->fp);
 						if(CURLE_OK == curlmultiSG->data.result)
 							lpDownLoadInfo->result=true;
 						else
