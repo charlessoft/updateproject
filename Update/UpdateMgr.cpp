@@ -109,7 +109,6 @@ void CUpdateMgr::ParseServerXml(TiXmlNode* xmlNode)
 				pp->QueryValueAttribute(FILE_LASTVER,&lpServerXmlInfo->lastVersion);
 				pp->QueryBoolAttribute(FILE_NEEDRESTART,&lpServerXmlInfo->needRestart);
 				pp->QueryValueAttribute(FILE_MD5,&lpServerXmlInfo->md5);
-				//pp->QueryValueAttribute(FILE_UPDATETIME,&lpServerXmlInfo->updateTime);
 
 				m_MapServerXmlInfo.insert(pair<string,SERVER_XML_INFO*>(lpServerXmlInfo->fileName,lpServerXmlInfo));
 
@@ -188,13 +187,9 @@ void CUpdateMgr::ClearLocalXmlMap()
 BOOL CUpdateMgr::Update()
 {
 
-	bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),10);
-	//if (bRet)
-	//{
-	//	AfxMessageBox(_T("true"));
-	//}
-	//else
-	//	AfxMessageBox(_T("fail"));
+	AfxBeginThread(MyUpdateDownLoadThread,this);
+	//bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),10);
+
 	return TRUE;
 }
 
@@ -300,6 +295,23 @@ UINT CUpdateMgr::MyUpdateDownLoadThread(LPVOID lpParam)
 
 UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 {
-	Update();
+//	Update();
+	m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),100);
+
+	//m_MultiDownLoad
+ 	////vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
+ 	////LPMULTI_DOWNLOAD_INFO lpDownLoadInfo = NULL;
+ 	////TCHAR szbuf[MAX_PATH]={0};
+ 	////for (Iter=m_UpdateList.begin();Iter!=m_UpdateList.end();++Iter)
+ 	////{
+ 	////	lpDownLoadInfo = *Iter;
+ 	////	//StrCat(szbuf,lpDownLoadInfo->fileSavePath)
+ 	////	_stprintf(szbuf,_T("%s%s"),lpDownLoadInfo->fileSavePath,lpDownLoadInfo->filename);
+ 	////	m_SingleDownLoad.DownloadByFile(lpDownLoadInfo->url,szbuf,100);
+		////Sleep(1000);
+ 	////}
+
+//	m_SingleDownLoad.DownloadByFile("http://img10.3lian.com/c1/newpic/10/22/12.jpg",_T("C:\\a\\111.jpg"),100);
+
 	return 1;
 }

@@ -92,7 +92,12 @@ bool CSingleDownload::DownloadByFile(char *url,TCHAR *filename,long timeout=10)
 	outfile = _tfopen(filename, _T("wb"));
 	if(NULL== outfile)
 		return false;
+	//设置buffer指针
+	SD_curl_easy_setopt_EXT(curl, CURLOPT_WRITEDATA, outfile,res);
+	//设置写入回调函数
+	SD_curl_easy_setopt_EXT(curl, CURLOPT_WRITEFUNCTION, Single_WriteFunc,res);
 	Download(curl,url,timeout);
+	
 
 	//开始执行
 	res = curl_easy_perform(curl);
