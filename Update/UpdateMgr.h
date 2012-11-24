@@ -1,6 +1,7 @@
 #pragma once
 #include "SingleDownload.h"
 #include "MultiDownload.h"
+
 typedef enum ClientType
 {
 	SERVER,//½âÎö·şÎñÆ÷xml

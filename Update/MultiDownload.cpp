@@ -6,6 +6,7 @@
 	if(CURLE_OK != A)  /* we failed */				\
 	{												\
 		_ftprintf(stderr, _T("ERROR:%s,%d,curl told us %s\n"), __FILE__,__LINE__,curl_easy_strerror(A));	\
+		g_Logger.Error(__FILE__,__LINE__,"ERROR:curl told us %s\n",curl_easy_strerror(A));	\
 		return false;								\
 	}
 
@@ -96,26 +97,26 @@ bool MultiDownload::Load(MULTI_DOWNLOAD_INFO *info,long timeout)
 
 
 	//设置写入的文件指针
-	curl_easy_setopt(eh, CURLOPT_WRITEDATA, info->fp);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_WRITEDATA, info->fp,res);
 	//设置写入回调函数
-	curl_easy_setopt(eh, CURLOPT_WRITEFUNCTION, MD_WriteFunc);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_WRITEFUNCTION, MD_WriteFunc,res);
 
-	curl_easy_setopt(eh, CURLOPT_HEADER, 0L);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_HEADER, 0L,res);
 	//设置URL地址
-	curl_easy_setopt(eh, CURLOPT_URL, info->url);
-	curl_easy_setopt(eh, CURLOPT_PRIVATE, info->url);
-	curl_easy_setopt(eh, CURLOPT_VERBOSE, 0L);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_URL, info->url,res);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_PRIVATE, info->url,res);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_VERBOSE, 0L,res);
 
-	curl_easy_setopt(eh, CURLOPT_WRITEDATA, info->fp);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_WRITEDATA, info->fp,res);
 
 
 	//设置无进程函数
-	curl_easy_setopt(eh, CURLOPT_NOPROGRESS, FALSE);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_NOPROGRESS, FALSE,res);
 	//设置进程回调函数
-	curl_easy_setopt(eh, CURLOPT_PROGRESSFUNCTION, MD_ProgressFunc);
-	curl_easy_setopt(eh, CURLOPT_PROGRESSDATA, info->process_data);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_PROGRESSFUNCTION, MD_ProgressFunc,res);
+	MD_curl_easy_setopt_EXT(eh, CURLOPT_PROGRESSDATA, info->process_data,res);
 
-	curl_easy_setopt(eh,CURLOPT_CONNECTTIMEOUT,10);
+	MD_curl_easy_setopt_EXT(eh,CURLOPT_CONNECTTIMEOUT,timeout,res);
 
 
 
@@ -174,6 +175,10 @@ static void init(CURLM *cm, MULTI_DOWNLOAD_INFO* info)
 	TCHAR szbuf[MAX_PATH]={0};
 	_stprintf(szbuf,_T("%s%s"),info->fileSavePath,info->filename);
 	info->fp = _tfopen(szbuf,_T("wb"));
+	if (info->fp==NULL)
+	{
+		return;
+	}
 	info->process_data =info->filename;
 	//设置写入的文件指针
 	curl_easy_setopt(eh, CURLOPT_WRITEDATA, info->fp);
@@ -293,11 +298,11 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 			else {
 				fprintf(stderr, "E: CURLMsg (%d)\n", msg->msg);
 			}
-			if(C<lstInfo.size())
-			{
-				init(cm,lstInfo[C++]);
-				U++;
-			}
+// 			if(C<lstInfo.size())
+// 			{
+// 				init(cm,lstInfo[C++]);
+// 				U++;
+// 			}
 		}
 	}
 
@@ -305,18 +310,20 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 	for (Iter=lstInfo.begin();Iter!=lstInfo.end();++Iter)
 	{
 		LPMULTI_DOWNLOAD_INFO lpDownInfo = (LPMULTI_DOWNLOAD_INFO)*Iter;
-		//if (lstInfo[j]->result!=true)
+		
 		if(lpDownInfo->result != true)
 		{
 			AfxMessageBox(_T("fail"));
 		}
-		fclose(((LPMULTI_DOWNLOAD_INFO)*Iter)->fp);
+		fclose(lpDownInfo->fp);
+		lpDownInfo->fp = NULL;
+		//fclose(((LPMULTI_DOWNLOAD_INFO)*Iter)->fp);
 	}
 
 	curl_multi_cleanup(cm);
 	curl_global_cleanup();
 	
-return true;
+	return true;
 }
 
 //MULTI_DOWNLOAD_INFO	N个结构体

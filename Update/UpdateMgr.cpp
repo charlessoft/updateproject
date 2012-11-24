@@ -2,6 +2,7 @@
 #include "UpdateMgr.h"
 #include "SingleDownload.h"
 #include "Environment.h"
+#include "CsysFile.h"
 CUpdateMgr::CUpdateMgr(void)
 {
 	//m_Map.insert(pair<string,string>(FILE_PATH,""));
@@ -251,15 +252,8 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			LPMULTI_DOWNLOAD_INFO lpMultiDownLoad = new MULTI_DOWNLOAD_INFO;
 			memset(lpMultiDownLoad,0,sizeof(MULTI_DOWNLOAD_INFO));
 
-			//创建时间
-			//SYSTEMTIME st;
-			//::GetLocalTime(&st);
-			//TCHAR buf[32];
-			//_stprintf_s(buf,32,_T("%04d-%02d-%02d-%02d-%02d-%02d"), st.wYear, st.wMonth, st.wDay,st.wHour,st.wMinute,st.wSecond);
-
 			wstring wsCurDirectory;
 			CEnvironment::Env_GetCurrentDirectoryW(wsCurDirectory);
-	
 			strCurDirectory.Format(_T("%s\\UpDate_%s\\"),wsCurDirectory.c_str(),s2ws(m_serverUpdateTime).c_str());
 
 #ifdef _UNICODE
@@ -296,22 +290,51 @@ UINT CUpdateMgr::MyUpdateDownLoadThread(LPVOID lpParam)
 UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 {
 //	Update();
-	m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),100);
+	bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),100);
+	if (bRet)
+	{
+		wstring wsCurDirectory;
+		CEnvironment::Env_GetCurrentDirectoryW(wsCurDirectory);
+		vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
+		BOOL bRet = FALSE;		
+		for (Iter=m_UpdateList.begin();Iter!=m_UpdateList.end();++Iter)
+		{
+			
+			wstring wsNewDownloadSourceFile; //新版本文件
+			wstring wsOldSourceFile; //旧版本文件
+			wstring wsOldDestPath; //保存旧版文件路径
+			LPMULTI_DOWNLOAD_INFO lpMultiDownLoadInfo = (LPMULTI_DOWNLOAD_INFO)*Iter;
+			wsOldDestPath += lpMultiDownLoadInfo->fileSavePath;
+			wsOldDestPath += lpMultiDownLoadInfo->filename;
+			wsOldDestPath += _T("_bak");
 
-	//m_MultiDownLoad
- 	////vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
- 	////LPMULTI_DOWNLOAD_INFO lpDownLoadInfo = NULL;
- 	////TCHAR szbuf[MAX_PATH]={0};
- 	////for (Iter=m_UpdateList.begin();Iter!=m_UpdateList.end();++Iter)
- 	////{
- 	////	lpDownLoadInfo = *Iter;
- 	////	//StrCat(szbuf,lpDownLoadInfo->fileSavePath)
- 	////	_stprintf(szbuf,_T("%s%s"),lpDownLoadInfo->fileSavePath,lpDownLoadInfo->filename);
- 	////	m_SingleDownLoad.DownloadByFile(lpDownLoadInfo->url,szbuf,100);
-		////Sleep(1000);
- 	////}
+			wsNewDownloadSourceFile += lpMultiDownLoadInfo->fileSavePath;
+			wsNewDownloadSourceFile += lpMultiDownLoadInfo->filename;
+			
+			wsOldSourceFile += lpMultiDownLoadInfo->filename;
 
-//	m_SingleDownLoad.DownloadByFile("http://img10.3lian.com/c1/newpic/10/22/12.jpg",_T("C:\\a\\111.jpg"),100);
+			bRet = CsysFile::CopyW(wsOldSourceFile,wsOldDestPath);
+			if (!bRet)
+			{
+				DWORD dwErr = CsysFile::SysGetlastError();
+				string srtMsg = CsysFile::ErrMsgA(dwErr);
+				g_Logger.Error(__FILE__,__LINE__,"CopyFile %s",srtMsg.c_str());
+					
+			}
+
+			bRet = CsysFile::CopyW(wsNewDownloadSourceFile,wsOldSourceFile);
+			if (!bRet)
+			{
+				DWORD dwErr = CsysFile::SysGetlastError();
+				string srtMsg = CsysFile::ErrMsgA(dwErr);
+				g_Logger.Error(__FILE__,__LINE__,"MoveFile %s sourceFile=%s",srtMsg.c_str(),wsNewDownloadSourceFile);
+			}
+			
+			
+		}
+	}
+
+	
 
 	return 1;
 }

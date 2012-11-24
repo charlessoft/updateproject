@@ -190,6 +190,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\CsysFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Environment.cpp"
 				>
 				<FileConfiguration
@@ -200,6 +204,10 @@
 						UsePrecompiledHeader="2"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GlobalFunction.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\MultiDownload.cpp"
@@ -368,7 +376,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\CsysFile.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Environment.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GlobalFunction.h"
 				>
 			</File>
 			<File
