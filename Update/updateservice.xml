@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Server_Files>
-  <file path="1.jpg.zip"  url="http://pic1.ooopic.com/uploadfilepic/sheji/2009-08-06/OOOPIC_SHIJUNHONG_200908067ffc4883d480152d.jpg" lastver="1.0.0.0" size="28672" needRestart="true" md5="" />
-  <file path="2.jpg.zip"  url="http://pic9.nipic.com/20100827/4563281_101437022482_2.jpg" lastver="1.1.0.0" size="888832 " needRestart="true" md5="" />
-  <file path="3.jpg.zip"  url="http://pic.nipic.com/2007-12-17/20071217222426246_2.jpg" lastver="1.0.0.0" size="24576" needRestart="true" md5="f90b4b12c3ffc34eead9cf8cf84a0e0a" />
-  <file path="4.jpg.zip"  url="http://pic7.nipic.com/20100531/4477226_005541007010_2.jpg" lastver="1.0.0.0" size="32768" needRestart="true" md5="" />
-  <file path="5.jpg.zip"  url="http://img10.3lian.com/c1/newpic/10/22/12.jpg" lastver="1.0.0.0" size="24576"  needRestart="true" md5="" />
-  <file path="6.jpg.zip"  url="http://pic6.nipic.com/20100415/3312165_134130071958_2.jpg" lastver="1.0.0.0" size="20480" needRestart="true" md5="" />
+<Server_Files updateTime="20121123095421" >
+  <file path="1.jpg"  url="http://10.142.49.127/1.gif" lastver="1.0.0.0" size="28672" needRestart="true" md5="" />
+  <file path="2.jpg"  url="http://10.142.49.127/2.gif" lastver="1.1.0.0" size="888832 " needRestart="true" md5="" />
+  <file path="3.jpg"  url="http://10.142.49.127/3.gif" lastver="1.0.0.0" size="24576" needRestart="true" md5="f90b4b12c3ffc34eead9cf8cf84a0e0a" />
+  <file path="4.jpg"  url="http://10.142.49.127/4.gif" lastver="1.0.0.0" size="32768" needRestart="true" md5="" />
+  <file path="5.jpg"  url="http://10.142.49.127/5.gif" lastver="1.0.0.0" size="24576"  needRestart="true" md5="" />
+  <file path="6.jpg"  url="http://10.142.49.127/6.gif" lastver="1.0.0.0" size="20480" needRestart="true" md5="" />
 </Server_Files>

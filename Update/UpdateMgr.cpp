@@ -209,7 +209,7 @@ void CUpdateMgr::WriteLocxlXmlFile(list<LOCAL_XML_INFO*> localXmlList)
 		fwrite(XMLHEAD,sizeof(char) ,strlen(XMLHEAD),pfile);
 		fwrite(NEWLINEA,sizeof(char) ,strlen(NEWLINEA),pfile);
 		
-		fwrite(LOCAL_XML_BEGIN_UPDATEFILELIST,0,strlen(LOCAL_XML_BEGIN_UPDATEFILELIST),pfile);
+		fwrite(LOCAL_XML_BEGIN_UPDATEFILELIST,sizeof(char) ,strlen(LOCAL_XML_BEGIN_UPDATEFILELIST),pfile);
 		fwrite(NEWLINEA,sizeof(char),strlen(NEWLINEA),pfile);
 
 
