@@ -45,4 +45,6 @@ public:
 
 public:
 	CListBox m_UpdateLst;
+public:
+	afx_msg void OnBnClickedBtnRestore();
 };

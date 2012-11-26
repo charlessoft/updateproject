@@ -9,10 +9,12 @@ using namespace std;
 
 //#define UPDATEXML _T("http://fjchenqian.3322.org/updateservice.xml")
 #define UPDATEXMLA			"http://10.142.49.127/updateservice.xml"
-#define LOCALXML			_T("update.config")
+#define LOCALXMLCONFIG			_T("update.config")
+#define LOCALXMLCONFIGA			"update.config"
 
 #define UPDATEFOLDER		_T("UpDateFolder_")
 #define NEWLINE				_T("\r\n")
+#define NEWLINEA				"\r\n"
 
 #define FILE_PATH			"path"
 #define FILE_URL			"url"
@@ -52,4 +54,15 @@ typedef struct _STR_LOCAL_XML_INFO
 
 //自定义消息
 #define UM_UPDATE WM_USER + 100
+
+
+
+//xml file info
+#define  XMLHEAD	"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+#define  LOCAL_XML_BEGIN_UPDATEFILELIST		"<UpdateFileList>"
+#define  LOCAL_XML_END_UPDATEFILELIST		"</UpdateFileList>"
+
+//#define  LOCAL_XML_INFO						_T("<LocalFile path=\"%s\" lastver=\"%s\" size=\"%s\"  md5=\"%s\"/>")
+//#define  LOCAL_XML_INFO						_T("<LocalFile path=\"%s\" lastver=\"%s\" size=\"%s\"  md5=\"%s\"/>")
+#define    LOCAL_XML_DETAIL_INFO			"<LocalFile path=\"%s\" lastver=\"%s\" size=\"%d\"  md5=\"%s\"/>"
 #endif

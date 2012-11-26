@@ -185,6 +185,90 @@ void CUpdateMgr::ClearLocalXmlMap()
 	}
 }
 
+void CUpdateMgr::ClearLocalXml_Tmp()
+{
+	//m_LocalXmlTmpList.
+	list<LOCAL_XML_INFO*>::iterator Iter;
+	for(Iter=m_LocalXmlTmpList.begin();Iter!=m_LocalXmlTmpList.end();++Iter)
+	{
+		delete *Iter;
+	}
+	m_LocalXmlTmpList.clear();
+}
+
+void CUpdateMgr::WriteLocxlXmlFile(list<LOCAL_XML_INFO*> localXmlList)
+{
+	string szCurDirectory;
+	CEnvironment::Env_GetCurrentDirectory(szCurDirectory);
+	string Updateconfig = szCurDirectory + "\\" + LOCALXMLCONFIGA;
+	FILE* pfile;
+	pfile = fopen(Updateconfig.c_str(),"wb");
+	if (pfile)
+	{
+		
+		fwrite(XMLHEAD,sizeof(char) ,strlen(XMLHEAD),pfile);
+		fwrite(NEWLINEA,sizeof(char) ,strlen(NEWLINEA),pfile);
+		
+		fwrite(LOCAL_XML_BEGIN_UPDATEFILELIST,0,strlen(LOCAL_XML_BEGIN_UPDATEFILELIST),pfile);
+		fwrite(NEWLINEA,sizeof(char),strlen(NEWLINEA),pfile);
+
+
+		list<LOCAL_XML_INFO*>::iterator Iter;
+		CString strBuf;
+		for (Iter=localXmlList.begin();Iter!=localXmlList.end();++Iter)
+		{
+			LPLOCAL_XML_INFO lpWriteLocalXmlInfo = (LPLOCAL_XML_INFO)*Iter;
+			strBuf.Format(_T(LOCAL_XML_DETAIL_INFO),s2ws(lpWriteLocalXmlInfo->fileName).c_str(),s2ws(lpWriteLocalXmlInfo->lastVersion).c_str(),lpWriteLocalXmlInfo->size,s2ws(lpWriteLocalXmlInfo->md5).c_str());
+			//myFile.Write(strBuf,strBuf.GetLength()*sizeof(TCHAR));
+			//myFile.Write(NEWLINE,lstrlen(NEWLINE)*sizeof(TCHAR));
+
+			fwrite(ws2s(strBuf.GetBuffer(0)).c_str(),sizeof(char),strBuf.GetLength(),pfile);
+			fwrite(NEWLINEA,sizeof(char),strlen(NEWLINEA),pfile);
+		}
+		//myFile.Write(LOCAL_XML_END_UPDATEFILELIST,lstrlen(LOCAL_XML_END_UPDATEFILELIST)*sizeof(TCHAR));
+		fwrite(LOCAL_XML_END_UPDATEFILELIST,sizeof(char),strlen(LOCAL_XML_END_UPDATEFILELIST),pfile);
+		fclose(pfile);
+		//myFile.Close();
+
+
+	}
+
+#if 0
+	wstring	wsCurDirectory;
+	CEnvironment::Env_GetCurrentDirectory(wsCurDirectory);
+	wstring Updateconfig = wsCurDirectory + L"\\" + LOCALXMLCONFIG;   //_T("update.config_1");
+	//wstring Updateconfig = wsCurDirectory + L"\\" + _T("update.config_1");
+	CFile myFile;
+	if (myFile.Open(Updateconfig.c_str(),CFile::modeCreate|CFile::modeReadWrite|CFile::typeBinary|CFile::modeNoTruncate))
+	{
+		WORD unicode = 0xFEFF;  //这句重要
+		myFile.Write(&unicode,2);  //这句重要
+		myFile.Write(XMLHEAD,lstrlen(XMLHEAD)*sizeof(TCHAR));
+		myFile.Write(NEWLINE,lstrlen(NEWLINE)*sizeof(TCHAR));
+		myFile.Write(LOCAL_XML_BEGIN_UPDATEFILELIST,lstrlen(LOCAL_XML_BEGIN_UPDATEFILELIST)*sizeof(TCHAR));
+		myFile.Write(NEWLINE,lstrlen(NEWLINE)*sizeof(TCHAR));
+		list<LOCAL_XML_INFO*>::iterator Iter;
+ 		CString strBuf;
+ 		for (Iter=localXmlList.begin();Iter!=localXmlList.end();++Iter)
+ 		{
+ 			LPLOCAL_XML_INFO lpWriteLocalXmlInfo = (LPLOCAL_XML_INFO)*Iter;
+ 			strBuf.Format(LOCAL_XML_DETAIL_INFO,s2ws(lpWriteLocalXmlInfo->fileName).c_str(),s2ws(lpWriteLocalXmlInfo->lastVersion).c_str(),lpWriteLocalXmlInfo->size,s2ws(lpWriteLocalXmlInfo->md5).c_str());
+ 			myFile.Write(strBuf,strBuf.GetLength()*sizeof(TCHAR));
+			myFile.Write(NEWLINE,lstrlen(NEWLINE)*sizeof(TCHAR));
+ 		}
+ 		myFile.Write(LOCAL_XML_END_UPDATEFILELIST,lstrlen(LOCAL_XML_END_UPDATEFILELIST)*sizeof(TCHAR));
+		myFile.Close();
+	}
+	else
+	{
+		DWORD dwErr = GetLastError();
+		string strMsg;
+		CGlobalFunction::AfxFormatMessageA(dwErr,strMsg);
+		g_Logger.Error(__FILE__,__LINE__,"WriteLocalXmlFile Fail dw=%ld,%s",dwErr,strMsg.c_str());
+	}
+#endif
+}
+
 BOOL CUpdateMgr::Update()
 {
 
@@ -213,9 +297,9 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 	}
 #ifdef _UNICODE
 	USES_CONVERSION;
-	ParseXml(W2A(LOCALXML),LOCAL,PARSE_TYPE_FILE);
+	ParseXml(W2A(LOCALXMLCONFIG),LOCAL,PARSE_TYPE_FILE);
 #else
-	ParseXml(LOCALXML,LOCAL,PARSE_TYPE_FILE);
+	ParseXml(LOCALXMLCONFIG,LOCAL,PARSE_TYPE_FILE);
 #endif
 
 
@@ -223,6 +307,7 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 	map<string,LOCAL_XML_INFO*>::iterator LocalIter;
 	BOOL bAppendLst=FALSE;
 	CString strCurDirectory;
+	ClearLocalXml_Tmp();
 	for(ServerIter = m_MapServerXmlInfo.begin(); ServerIter != m_MapServerXmlInfo.end(); ServerIter++)
 	{
 		SERVER_XML_INFO* lpSerXmlInfo =(SERVER_XML_INFO*)ServerIter->second;
@@ -253,7 +338,7 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			memset(lpMultiDownLoad,0,sizeof(MULTI_DOWNLOAD_INFO));
 
 			wstring wsCurDirectory;
-			CEnvironment::Env_GetCurrentDirectoryW(wsCurDirectory);
+			CEnvironment::Env_GetCurrentDirectory(wsCurDirectory);
 			strCurDirectory.Format(_T("%s\\%s%s\\"),wsCurDirectory.c_str(),UPDATEFOLDER, s2ws(m_serverUpdateTime).c_str());
 
 #ifdef _UNICODE
@@ -266,7 +351,16 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			_tcscpy(lpMultiDownLoad->url,(lpSerXmlInfo->url.c_str()));
 			_tcscpy(lpMultiDownLoad->fileSavePath,strCurDirectory.GetBuffer(0));
 #endif
+			LOCAL_XML_INFO* lpNewLocalXmlInfo = new LOCAL_XML_INFO;
+			memset(lpNewLocalXmlInfo,0,sizeof(LOCAL_XML_INFO));
+			lpNewLocalXmlInfo->fileName =lpSerXmlInfo->fileName;
+			lpNewLocalXmlInfo->lastVersion=lpSerXmlInfo->lastVersion;
+			lpNewLocalXmlInfo->md5=lpSerXmlInfo->md5;
+			lpNewLocalXmlInfo->size=lpSerXmlInfo->size;	
+			m_LocalXmlTmpList.push_back(lpNewLocalXmlInfo);
+
 			m_UpdateList.push_back(lpMultiDownLoad);
+
 			bAppendLst=FALSE;
 		}
 	}
@@ -294,7 +388,7 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 	if (bRet)
 	{
 		wstring wsCurDirectory;
-		CEnvironment::Env_GetCurrentDirectoryW(wsCurDirectory);
+		CEnvironment::Env_GetCurrentDirectory(wsCurDirectory);
 		vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
 		BOOL bRet = FALSE;		
 		for (Iter=m_UpdateList.begin();Iter!=m_UpdateList.end();++Iter)
@@ -303,10 +397,16 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 			wstring wsNewDownloadSourceFile; //新版本文件
 			wstring wsOldSourceFile; //旧版本文件
 			wstring wsOldDestPath; //保存旧版文件路径
+			wstring wsConfigPath; //旧的配置文件路径
 			LPMULTI_DOWNLOAD_INFO lpMultiDownLoadInfo = (LPMULTI_DOWNLOAD_INFO)*Iter;
 			wsOldDestPath += lpMultiDownLoadInfo->fileSavePath;
 			wsOldDestPath += lpMultiDownLoadInfo->filename;
-			wsOldDestPath += _T("_bak");
+			wsOldDestPath += _T("_BAK");
+
+			wsConfigPath = lpMultiDownLoadInfo->fileSavePath;
+			wsConfigPath += LOCALXMLCONFIG;
+			wsConfigPath += _T("_BAK");
+			
 
 			wsNewDownloadSourceFile += lpMultiDownLoadInfo->fileSavePath;
 			wsNewDownloadSourceFile += lpMultiDownLoadInfo->filename;
@@ -329,12 +429,51 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 				string srtMsg = CsysFile::ErrMsgA(dwErr);
 				g_Logger.Error(__FILE__,__LINE__,"MoveFile %s sourceFile=%s",srtMsg.c_str(),wsNewDownloadSourceFile);
 			}
-			
+			bRet = CsysFile::Copy(LOCALXMLCONFIG,wsConfigPath);
+			if (!bRet)
+			{
+				DWORD dwErr = CsysFile::SysGetlastError();
+				string srtMsg = CsysFile::ErrMsgA(dwErr);
+				g_Logger.Error(__FILE__,__LINE__,"LOCALXML %s sourceFile=%s",srtMsg.c_str(),wsNewDownloadSourceFile);
+			}
 			
 		}
 	}
-
 	
+	WriteLocxlXmlFile(m_LocalXmlTmpList);
 
 	return 1;
+}
+
+void CUpdateMgr::RestoreFile(wstring strRestorePath,wstring wsCurDirectory)
+{
+	CFileFind fileFinder;
+	CString filePath ;//= strRestorePath.c_str() + _T("//*.*");
+	filePath.Format(_T("%s\\*.*"),strRestorePath.c_str());
+	BOOL bFinished = fileFinder.FindFile(filePath);
+	wstring wsDestfile;
+	wstring wsRestoreFile;
+	while(bFinished)  //每次循环对应一个类别目录
+	{
+		bFinished = fileFinder.FindNextFile();
+		if(fileFinder.IsDirectory() && !fileFinder.IsDots())  //若是目录则递归调用此方法
+		{
+			// BayesCategoryTest(bt, fileFinder.GetFilePath());
+		}
+		else  //再判断是否为txt文件
+		{
+			//获取文件类型
+			CString fileName = fileFinder.GetFileName();
+			if(fileName.Right(4).CompareNoCase(_T("_BAK")) == 0)
+			{
+				wsRestoreFile = strRestorePath + L"\\" + fileName.GetBuffer(0);
+				wsDestfile = wsCurDirectory + L"\\" + fileName.Left(fileName.GetLength()-4).GetBuffer(0);
+				BOOL bret = CsysFile::Copy(wsRestoreFile,wsDestfile);
+				if (FALSE == bret)
+				{
+					g_Logger.Error(__FILE__,__LINE__,"还原文件失败 restore %s to %s",ws2s(wsRestoreFile).c_str(),ws2s(wsDestfile).c_str());
+				}
+			}
+		}
+	}
 }

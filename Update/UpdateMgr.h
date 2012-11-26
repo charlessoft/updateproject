@@ -39,9 +39,12 @@ public:
 
 	//执行更新下载文件
 	BOOL Update();
+	BOOL UpdateLocalXmlInfo();
 
 	//获取更新列表
 	vector<MULTI_DOWNLOAD_INFO*> GetUpdateList(){return m_UpdateList;}
+
+	void RestoreFile(wstring strRestorePath,wstring strCurDirectory);
 
 private:
 	void ParseServerXml(TiXmlNode* xmlNode);
@@ -50,9 +53,12 @@ private:
 private:
 	void ClearServerXmlMap();
 	void ClearLocalXmlMap();
+	void ClearLocalXml_Tmp();
+	void WriteLocxlXmlFile(list<LOCAL_XML_INFO*> localXmlList);
 private:
 	list<SERVER_XML_INFO*> m_SerXmlList;
 	list<LOCAL_XML_INFO*> m_LocalXmlList;
+	list<LOCAL_XML_INFO*> m_LocalXmlTmpList;
 	map<string,SERVER_XML_INFO*> m_MapServerXmlInfo;
 	map<string,LOCAL_XML_INFO*> m_MapLocalXmlInfo;
 
@@ -64,6 +70,7 @@ private:
 	MultiDownload	m_MultiDownLoad;
 
 
+	
 	UPDATE_ERROR m_UpdateERR;
 	
 	

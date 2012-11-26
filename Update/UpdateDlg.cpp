@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDOK, &CUpdateDlg::OnBnClickedOk)
 	ON_MESSAGE(UM_UPDATE, OnUpdateList)//注意这条语句的后面没有分号
+	ON_BN_CLICKED(IDC_BTN_RESTORE, &CUpdateDlg::OnBnClickedBtnRestore)
 END_MESSAGE_MAP()
 
 
@@ -171,10 +172,10 @@ void CUpdateDlg::GetUpdateList(CStringArray& arr)
 
 	CFileFind fileFinder;
 	wstring CurDirectory;
-	CString filePath = CEnvironment::Env_GetCurrentDirectoryW(CurDirectory).c_str();
+	CString filePath = CEnvironment::Env_GetCurrentDirectory(CurDirectory).c_str();
 	//CString filePath = str + _T("//*.*");
 	int CurDirectoryLen = filePath.GetLength();
-	filePath=filePath+="//*.*";
+	filePath=filePath+="\\*.*";
 	BOOL bFinished = fileFinder.FindFile(filePath);
 	while(bFinished)  //每次循环对应一个类别目录
 	{
@@ -261,4 +262,21 @@ LRESULT CUpdateDlg::OnUpdateList(WPARAM wParam,LPARAM lParam){
 	//UpdateMgr.Update();
 	UpdateData(FALSE);
 	return 0;
+}
+
+void CUpdateDlg::OnBnClickedBtnRestore()
+{
+	// TODO: Add your control notification handler code here
+	int nCurSel = m_UpdateLst.GetCurSel();
+	CString strRestoreFolder;
+	if (nCurSel<0)
+		return;
+	m_UpdateLst.GetText(nCurSel,strRestoreFolder);
+	wstring wsCurDirectory;
+	wstring wsRestoreDirectory;
+	CEnvironment::Env_GetCurrentDirectory(wsCurDirectory);
+	wsRestoreDirectory = wsCurDirectory + L"\\" + UPDATEFOLDER +  strRestoreFolder.GetBuffer(0);
+	m_UpdateMgr.RestoreFile(wsRestoreDirectory,wsCurDirectory);
+
+
 }
