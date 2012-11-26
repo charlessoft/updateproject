@@ -313,7 +313,7 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 			
 			wsOldSourceFile += lpMultiDownLoadInfo->filename;
 
-			bRet = CsysFile::CopyW(wsOldSourceFile,wsOldDestPath);
+			bRet = CsysFile::Copy(wsOldSourceFile,wsOldDestPath);
 			if (!bRet)
 			{
 				DWORD dwErr = CsysFile::SysGetlastError();
@@ -322,7 +322,7 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 					
 			}
 
-			bRet = CsysFile::CopyW(wsNewDownloadSourceFile,wsOldSourceFile);
+			bRet = CsysFile::Copy(wsNewDownloadSourceFile,wsOldSourceFile);
 			if (!bRet)
 			{
 				DWORD dwErr = CsysFile::SysGetlastError();

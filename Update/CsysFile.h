@@ -9,14 +9,14 @@ public:
 public:
 	~CsysFile(void);
 	
-	static BOOL CopyA(string sourceFileName, string destFileName,BOOL overwrite=TRUE);
-	static BOOL CopyW(wstring sourceFileName, wstring destFileName,BOOL overwrite=TRUE);
+	static BOOL Copy(string sourceFileName, string destFileName,BOOL overwrite=TRUE);
+	static BOOL Copy(wstring sourceFileName, wstring destFileName,BOOL overwrite=TRUE);
 
-	static BOOL DeleteA(string path);
-	static BOOL ExistsA(string path);
+	static BOOL Delete(string path);
+	static BOOL Exists(string path);
 
-	static BOOL MoveA(string sourceFileName, string destFileName);
-	static BOOL MoveW(wstring sourceFileName, wstring destFileName);
+	static BOOL Move(string sourceFileName, string destFileName);
+	static BOOL Move(wstring sourceFileName, wstring destFileName);
 
 	static DWORD SysGetlastError();
 	static string ErrMsgA(DWORD dwErr);

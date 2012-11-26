@@ -12,24 +12,24 @@ CsysFile::~CsysFile(void)
 
 }
 
-BOOL CsysFile::CopyW(wstring sourceFileName, wstring destFileName,BOOL overwrite/*=TRUE*/)
+BOOL CsysFile::Copy(wstring sourceFileName, wstring destFileName,BOOL overwrite/*=TRUE*/)
 {
 	return CopyFileW(sourceFileName.c_str(),destFileName.c_str(),!overwrite);
 }
 
-BOOL CsysFile::CopyA(string sourceFileName, string destFileName,BOOL overwrite/*=TRUE*/)
+BOOL CsysFile::Copy(string sourceFileName, string destFileName,BOOL overwrite/*=TRUE*/)
 {
 	wstring wsSourceFileName = s2ws(sourceFileName);
 	wstring wsDestFileName= s2ws(destFileName);
-	return CopyW(wsSourceFileName,wsDestFileName,overwrite);
+	return Copy(wsSourceFileName,wsDestFileName,overwrite);
 }
 
-BOOL CsysFile::DeleteA(string path)
+BOOL CsysFile::Delete(string path)
 {
 	return DeleteFileA(path.c_str());
 }
 
-BOOL CsysFile::ExistsA(string path)
+BOOL CsysFile::Exists(string path)
 {
 	if (_access(path.c_str(),0)!=-1)
 	{
@@ -38,12 +38,12 @@ BOOL CsysFile::ExistsA(string path)
 	return FALSE;
 }
 
-BOOL CsysFile::MoveA(string sourceFileName, string destFileName)
+BOOL CsysFile::Move(string sourceFileName, string destFileName)
 {
 	return MoveFileExA(sourceFileName.c_str(), destFileName.c_str(),MOVEFILE_REPLACE_EXISTING |MOVEFILE_COPY_ALLOWED);
 }
 
-BOOL CsysFile::MoveW(wstring sourceFileName, wstring destFileName)
+BOOL CsysFile::Move(wstring sourceFileName, wstring destFileName)
 {
 	return MoveFileExW(sourceFileName.c_str(), destFileName.c_str(),MOVEFILE_REPLACE_EXISTING |MOVEFILE_COPY_ALLOWED);
 }

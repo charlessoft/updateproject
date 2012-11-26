@@ -224,7 +224,7 @@ void CUpdateDlg::Init()
  				LPMULTI_DOWNLOAD_INFO lpUpdateInfo = (MULTI_DOWNLOAD_INFO*)*Iter;
  				//m_txtUpdateLst+=lpServerXmlInfo->fileName.c_str();
 				m_txtUpdateLst+=lpUpdateInfo->filename;
- 				m_txtUpdateLst+=;
+ 				m_txtUpdateLst+=NEWLINE;
  			}
  			//UpdateMgr.Update();
 			break;
