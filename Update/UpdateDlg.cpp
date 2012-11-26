@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "Update.h"
 #include "UpdateDlg.h"
+#include "Environment.h"
+#include "CsysPath.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -58,6 +60,7 @@ void CUpdateDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_TXTUPDATELST, m_txtUpdateLst);
+	DDX_Control(pDX, IDC_LIST_LOCALUPDATELIST, m_UpdateLst);
 }
 
 BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
@@ -163,6 +166,39 @@ void CUpdateDlg::OnBnClickedOk()
 	m_UpdateMgr.Update();
 }
 
+void CUpdateDlg::GetUpdateList(CStringArray& arr)
+{
+
+	CFileFind fileFinder;
+	wstring CurDirectory;
+	CString filePath = CEnvironment::Env_GetCurrentDirectoryW(CurDirectory).c_str();
+	//CString filePath = str + _T("//*.*");
+	int CurDirectoryLen = filePath.GetLength();
+	filePath=filePath+="//*.*";
+	BOOL bFinished = fileFinder.FindFile(filePath);
+	while(bFinished)  //每次循环对应一个类别目录
+	{
+		bFinished = fileFinder.FindNextFile();
+		if(fileFinder.IsDirectory() && !fileFinder.IsDots())  //若是目录则递归调用此方法
+		{
+			// BayesCategoryTest(bt, fileFinder.GetFilePath());
+			CString strFilePath = fileFinder.GetFilePath();
+			
+			if (strFilePath.Mid(CurDirectoryLen+1,lstrlen(UPDATEFOLDER)).CompareNoCase(UPDATEFOLDER) ==0)
+			{
+				wstring strPath = CsysPath::GetDirectoryName(strFilePath.GetBuffer(0));
+				strFilePath.Replace(strPath.c_str(),_T(""));
+				arr.Add(strFilePath.Right(strFilePath.GetLength()-1-lstrlen(UPDATEFOLDER)));
+			}
+			
+		}
+		else  //再判断是否为txt文件
+		{
+			
+		
+		}
+	}
+}
 
 void CUpdateDlg::Init()
 {
@@ -188,13 +224,19 @@ void CUpdateDlg::Init()
  				LPMULTI_DOWNLOAD_INFO lpUpdateInfo = (MULTI_DOWNLOAD_INFO*)*Iter;
  				//m_txtUpdateLst+=lpServerXmlInfo->fileName.c_str();
 				m_txtUpdateLst+=lpUpdateInfo->filename;
- 				m_txtUpdateLst+="\r\n";
+ 				m_txtUpdateLst+=;
  			}
  			//UpdateMgr.Update();
 			break;
 		}
 	}
-	
+	CStringArray arrUpdateLst;
+	GetUpdateList(arrUpdateLst);
+	for (int i=0,sz=arrUpdateLst.GetSize();i<sz;i++)
+	{
+		m_UpdateLst.AddString(arrUpdateLst.GetAt(i));
+	}
+	m_UpdateLst.SetCurSel(0);
 	UpdateData(FALSE);
 
 

@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CsysPath.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Environment.cpp"
 				>
 				<FileConfiguration
@@ -377,6 +381,10 @@
 			>
 			<File
 				RelativePath=".\CsysFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CsysPath.h"
 				>
 			</File>
 			<File

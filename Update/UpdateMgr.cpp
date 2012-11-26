@@ -254,7 +254,7 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 
 			wstring wsCurDirectory;
 			CEnvironment::Env_GetCurrentDirectoryW(wsCurDirectory);
-			strCurDirectory.Format(_T("%s\\UpDate_%s\\"),wsCurDirectory.c_str(),s2ws(m_serverUpdateTime).c_str());
+			strCurDirectory.Format(_T("%s\\%s%s\\"),wsCurDirectory.c_str(),UPDATEFOLDER, s2ws(m_serverUpdateTime).c_str());
 
 #ifdef _UNICODE
 			_tcscpy(lpMultiDownLoad->filename,A2W(lpSerXmlInfo->fileName.c_str()));

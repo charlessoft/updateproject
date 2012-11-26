@@ -8,10 +8,11 @@ using namespace std;
 #define UPDATE_PROPERTIES "UPDATE_properties"
 
 //#define UPDATEXML _T("http://fjchenqian.3322.org/updateservice.xml")
-#define UPDATEXMLA	"http://10.142.49.127/updateservice.xml"
-#define LOCALXML	_T("update.config")
+#define UPDATEXMLA			"http://10.142.49.127/updateservice.xml"
+#define LOCALXML			_T("update.config")
 
-
+#define UPDATEFOLDER		_T("UpDateFolder_")
+#define NEWLINE				_T("\r\n")
 
 #define FILE_PATH			"path"
 #define FILE_URL			"url"

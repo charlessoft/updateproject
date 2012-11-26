@@ -5,8 +5,8 @@ class CEnvironment
 {
 public:
 	CEnvironment(void);
-	static	void Env_GetCurrentDirectoryA(string &szCurrentDirectory);
-	static	void Env_GetCurrentDirectoryW(wstring &wsCurrentDirectory);
+	static	string Env_GetCurrentDirectoryA(string &szCurrentDirectory);
+	static	wstring Env_GetCurrentDirectoryW(wstring &wsCurrentDirectory);
 public:
 	~CEnvironment(void);
 };

@@ -3,6 +3,7 @@
 
 #pragma once
 #include "UpdateMgr.h"
+#include "afxwin.h"
 
 // CUpdateDlg dialog
 class CUpdateDlg : public CDialog
@@ -19,6 +20,7 @@ public:
 
 
 	void Init();
+	void GetUpdateList(CStringArray& arr);
 private:
 	CUpdateMgr m_UpdateMgr;
 // Implementation
@@ -41,4 +43,6 @@ public:
 	static UINT MyCheckUpdateThread(LPVOID lpParam);
 	UINT MyCheckUpdateThreadProc();
 
+public:
+	CListBox m_UpdateLst;
 };
