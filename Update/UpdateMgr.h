@@ -40,11 +40,15 @@ public:
 	//执行更新下载文件
 	BOOL Update();
 	BOOL UpdateLocalXmlInfo();
+	BOOL UpdateFiles(TCHAR* path);
 
 	//获取更新列表
 	vector<MULTI_DOWNLOAD_INFO*> GetUpdateList(){return m_UpdateList;}
 
 	void RestoreFile(wstring strRestorePath,wstring strCurDirectory);
+	void GetUpdateList(CStringArray& arr);
+
+	int GetUpdateFolderIndex(wstring pUpdateFolder);
 
 private:
 	void ParseServerXml(TiXmlNode* xmlNode);
@@ -54,7 +58,7 @@ private:
 	void ClearServerXmlMap();
 	void ClearLocalXmlMap();
 	void ClearLocalXml_Tmp();
-	void WriteLocxlXmlFile(list<LOCAL_XML_INFO*> localXmlList);
+	void WriteLocxlXmlFile(TCHAR* path,list<LOCAL_XML_INFO*> localXmlList);
 private:
 	list<SERVER_XML_INFO*> m_SerXmlList;
 	list<LOCAL_XML_INFO*> m_LocalXmlList;
@@ -83,5 +87,8 @@ private:
 	UINT MyUpdateDownLoadThreadProc();
 private:
 	CConfigMgr m_ConfigMgr;
+
+
+	map<wstring,int> m_mapUpdateFolder;
 
 };

@@ -13,7 +13,7 @@ using namespace std;
 #define LOCALXMLCONFIGA			"update.config"
 
 
-
+#define UPDATE_FILE				_T("UpdateFile")
 #define UPDATEFOLDER			_T("UpDateFolder_")
 #define NEWLINE					_T("\r\n")
 #define NEWLINEA				"\r\n"
@@ -61,6 +61,7 @@ typedef struct _STR_CONFIGINFO
 
 //自定义消息
 #define UM_UPDATE WM_USER + 100
+#define UM_UPDATE_RESULT WM_USER + 101
 
 
 //Config 

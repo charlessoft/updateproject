@@ -35,6 +35,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg LRESULT OnUpdateList(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUpdateResult(WPARAM wParam,LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOk();
@@ -49,4 +50,6 @@ public:
 	CListBox m_UpdateLst;
 public:
 	afx_msg void OnBnClickedBtnRestore();
+public:
+	afx_msg void OnLbnDblclkListLocalupdatelist();
 };

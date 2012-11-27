@@ -70,7 +70,9 @@ BEGIN_MESSAGE_MAP(CUpdateDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDOK, &CUpdateDlg::OnBnClickedOk)
 	ON_MESSAGE(UM_UPDATE, OnUpdateList)//注意这条语句的后面没有分号
+	ON_MESSAGE(UM_UPDATE_RESULT, OnUpdateResult)//注意这条语句的后面没有分号
 	ON_BN_CLICKED(IDC_BTN_RESTORE, &CUpdateDlg::OnBnClickedBtnRestore)
+	ON_LBN_DBLCLK(IDC_LIST_LOCALUPDATELIST, &CUpdateDlg::OnLbnDblclkListLocalupdatelist)
 END_MESSAGE_MAP()
 
 
@@ -164,46 +166,9 @@ void CUpdateDlg::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	//OnOK();
 	//g_Logger.Debug(__FILE__,__LINE__,"DDD%s","11");
-	if (m_txtUpdateLst.IsEmpty())
-	{
-		return;
-	}
-	m_UpdateMgr.Update();
+	
 }
 
-void CUpdateDlg::GetUpdateList(CStringArray& arr)
-{
-
-	CFileFind fileFinder;
-	wstring CurDirectory;
-	CString filePath = CEnvironment::Env_GetCurrentDirectory(CurDirectory).c_str();
-	//CString filePath = str + _T("//*.*");
-	int CurDirectoryLen = filePath.GetLength();
-	filePath=filePath+="\\*.*";
-	BOOL bFinished = fileFinder.FindFile(filePath);
-	while(bFinished)  //每次循环对应一个类别目录
-	{
-		bFinished = fileFinder.FindNextFile();
-		if(fileFinder.IsDirectory() && !fileFinder.IsDots())  //若是目录则递归调用此方法
-		{
-			// BayesCategoryTest(bt, fileFinder.GetFilePath());
-			CString strFilePath = fileFinder.GetFilePath();
-			
-			if (strFilePath.Mid(CurDirectoryLen+1,lstrlen(UPDATEFOLDER)).CompareNoCase(UPDATEFOLDER) ==0)
-			{
-				wstring strPath = CsysPath::GetDirectoryName(strFilePath.GetBuffer(0));
-				strFilePath.Replace(strPath.c_str(),_T(""));
-				arr.Add(strFilePath.Right(strFilePath.GetLength()-1-lstrlen(UPDATEFOLDER)));
-			}
-			
-		}
-		else  //再判断是否为txt文件
-		{
-			
-		
-		}
-	}
-}
 
 void CUpdateDlg::Init()
 {
@@ -236,7 +201,7 @@ void CUpdateDlg::Init()
 		}
 	}
 	CStringArray arrUpdateLst;
-	GetUpdateList(arrUpdateLst);
+	m_UpdateMgr.GetUpdateList(arrUpdateLst);
 	for (int i=0,sz=arrUpdateLst.GetSize();i<sz;i++)
 	{
 		m_UpdateLst.AddString(arrUpdateLst.GetAt(i));
@@ -244,11 +209,45 @@ void CUpdateDlg::Init()
 	m_UpdateLst.SetCurSel(0);
 	UpdateData(FALSE);
 
+	
 
 	//BOOL bret = m_UpdateMgr.DownLoadServerUpdateXmlFile();
 
 
 	
+}
+
+
+LRESULT CUpdateDlg::OnUpdateResult(WPARAM wParam,LPARAM lParam){
+	AfxMessageBox(L"下载成功。是否更新文件？");
+	//m_UpdateMgr.UpdateFiles()
+	TCHAR* pUpdateFolder = (TCHAR*)wParam;
+	int nCurSel=0;
+	int nIndex = m_UpdateMgr.GetUpdateFolderIndex(pUpdateFolder);
+	if (nIndex <0)
+	{
+		m_UpdateLst.AddString(pUpdateFolder);
+		nCurSel = m_UpdateLst.GetCount()-1;
+		m_UpdateLst.SetCurSel(nCurSel);
+	}
+	else
+	{
+		m_UpdateLst.SetCurSel(nIndex);
+		nCurSel = nIndex ;
+	}
+
+	
+	CString strValue ;
+	CString strUpdateFolder;
+	if (nCurSel!=-1)
+		m_UpdateLst.GetText(nCurSel,strValue);
+	else
+		m_UpdateLst.GetText(nCurSel,strValue);
+	
+	strUpdateFolder.Format(_T("%s%s"),UPDATEFOLDER,strValue);
+	m_UpdateMgr.UpdateFiles(strUpdateFolder.GetBuffer());
+	
+	return 0;
 }
 
 LRESULT CUpdateDlg::OnUpdateList(WPARAM wParam,LPARAM lParam){
@@ -265,6 +264,11 @@ LRESULT CUpdateDlg::OnUpdateList(WPARAM wParam,LPARAM lParam){
 	}
 	//UpdateMgr.Update();
 	UpdateData(FALSE);
+	if (m_txtUpdateLst.IsEmpty())
+	{
+		return 0;
+	}
+	m_UpdateMgr.Update();
 	return 0;
 }
 
@@ -282,5 +286,21 @@ void CUpdateDlg::OnBnClickedBtnRestore()
 	wsRestoreDirectory = wsCurDirectory + L"\\" + UPDATEFOLDER +  strRestoreFolder.GetBuffer(0);
 	m_UpdateMgr.RestoreFile(wsRestoreDirectory,wsCurDirectory);
 
+
+}
+
+void CUpdateDlg::OnLbnDblclkListLocalupdatelist()
+{
+	int nCurSel=0;
+	CString strUpdateFolder;
+	CString strValue;
+	nCurSel = m_UpdateLst.GetCurSel();
+	if (nCurSel!=-1)
+		m_UpdateLst.GetText(nCurSel,strValue);
+	else
+		m_UpdateLst.GetText(nCurSel,strValue);
+
+	strUpdateFolder.Format(_T("%s%s"),UPDATEFOLDER,strValue);
+	m_UpdateMgr.UpdateFiles(strUpdateFolder.GetBuffer());
 
 }
