@@ -164,6 +164,10 @@ void CUpdateDlg::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	//OnOK();
 	//g_Logger.Debug(__FILE__,__LINE__,"DDD%s","11");
+	if (m_txtUpdateLst.IsEmpty())
+	{
+		return;
+	}
 	m_UpdateMgr.Update();
 }
 

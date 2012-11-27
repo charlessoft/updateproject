@@ -126,7 +126,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;BUILDING_LIBCURL;HTTP_ONLY"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;BUILDING_LIBCURL;HTTP_ONLY;TIXML_USE_STL"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"

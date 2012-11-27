@@ -167,7 +167,7 @@ void CUpdateMgr::ParseLocalXml(TiXmlNode* xmlNode)
 //É¾³ý·þÎñÆ÷ map µü´úÉ¾³ý
 void CUpdateMgr::ClearServerXmlMap()
 {
-	map<string,SERVER_XML_INFO*>::iterator iter=NULL;
+	map<string,SERVER_XML_INFO*>::iterator iter;
 	for (iter=m_MapServerXmlInfo.begin();iter!=m_MapServerXmlInfo.end();)
 	{
 		m_MapServerXmlInfo.erase(iter++);
