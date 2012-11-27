@@ -3,6 +3,7 @@
 
 #pragma once
 #include "UpdateMgr.h"
+#include "ConfigMgr.h"
 #include "afxwin.h"
 
 // CUpdateDlg dialog
@@ -23,6 +24,7 @@ public:
 	void GetUpdateList(CStringArray& arr);
 private:
 	CUpdateMgr m_UpdateMgr;
+	CConfigMgr m_ConfigMgr;
 // Implementation
 protected:
 	HICON m_hIcon;

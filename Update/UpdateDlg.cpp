@@ -214,7 +214,7 @@ void CUpdateDlg::Init()
 
 // 	CSingleDown
 	
-
+//m_ConfigMgr.GetConfigInfo();
 	
 	//UpdateMgr.ParseLocalXml()
 	UPDATE_ERROR UpdateErrCode = (UPDATE_ERROR)m_UpdateMgr.IsNeedUpdate();

@@ -119,8 +119,18 @@ bool CSingleDownload::DownloadByFile(char *url,TCHAR *filename,long timeout=10)
 	return true;
 }
 
-bool CSingleDownload::DownLoadByMemory(char *url, long timeout)
+bool CSingleDownload::DownLoadByMemory(TCHAR *downUrl, long timeout)
 {
+ #ifdef _UNICODE
+ 	wstring wsurl(downUrl);
+ 	string szurl =ws2s(wsurl);
+ 	char* url =(char*)szurl.c_str();
+ #else
+ 	char* url =downUrl;
+ #endif
+	//char* url = downUrl;
+
+
  	curl = curl_easy_init();
  	if(NULL == curl)
  		return false;

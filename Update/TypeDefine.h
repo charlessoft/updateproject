@@ -8,23 +8,25 @@ using namespace std;
 #define UPDATE_PROPERTIES "UPDATE_properties"
 
 //#define UPDATEXML _T("http://fjchenqian.3322.org/updateservice.xml")
-#define UPDATEXMLA			"http://10.142.49.127/updateservice.xml"
+#define UPDATEXMLA				"http://10.142.49.127/updateservice.xml"
 #define LOCALXMLCONFIG			_T("update.config")
 #define LOCALXMLCONFIGA			"update.config"
 
-#define UPDATEFOLDER		_T("UpDateFolder_")
-#define NEWLINE				_T("\r\n")
+
+
+#define UPDATEFOLDER			_T("UpDateFolder_")
+#define NEWLINE					_T("\r\n")
 #define NEWLINEA				"\r\n"
 
-#define FILE_PATH			"path"
-#define FILE_URL			"url"
-#define FILE_LASTVER		"lastver"
-#define FILE_SIZE			"size"
-#define FILE_NEEDRESTART	"needRestart"
-#define FILE_MD5			"md5"
-#define FILE_UPDATETIME		"updateTime"
+#define FILE_PATH				"path"
+#define FILE_URL				"url"
+#define FILE_LASTVER			"lastver"
+#define FILE_SIZE				"size"
+#define FILE_NEEDRESTART		"needRestart"
+#define FILE_MD5				"md5"
+#define FILE_UPDATETIME			"updateTime"
 
-#define SERVER_FILES		"Server_Files"
+#define SERVER_FILES			"Server_Files"
 
 
 
@@ -52,8 +54,19 @@ typedef struct _STR_LOCAL_XML_INFO
 }LOCAL_XML_INFO,*LPLOCAL_XML_INFO;
 
 
+typedef struct _STR_CONFIGINFO
+{
+	wstring url;
+}CONFIGINFO,*LPCONFIGINFO;
+
 //自定义消息
 #define UM_UPDATE WM_USER + 100
+
+
+//Config 
+#define UPDATECONFIG					_T("UpdateConfig.ini")
+#define OPTION							_T("Option")
+	#define SERVERADDRESS				_T("SERVERADDRESS")
 
 
 

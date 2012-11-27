@@ -13,6 +13,7 @@ CUpdateMgr::CUpdateMgr(void)
 		return ;								
 	}
 	m_UpdateERR = NEEDUPDATE;
+	m_ConfigMgr.ReadConfig();
 }
 
 CUpdateMgr::~CUpdateMgr(void)
@@ -33,8 +34,9 @@ int CUpdateMgr::IsNeedUpdate()
 
 bool CUpdateMgr::DownLoadServerUpdateXmlFile()
 {
-
-	return m_SingleDownLoad.DownLoadByMemory(UPDATEXMLA,5);
+	LPCONFIGINFO lpConfigInfo = m_ConfigMgr.GetConfigInfo();
+	return m_SingleDownLoad.DownLoadByMemory((TCHAR*)lpConfigInfo->url.c_str(),5);
+	//return m_SingleDownLoad.DownLoadByMemory(UPDATEXMLA,5);
 }
 
 string CUpdateMgr::GetServerUpdateXmlBuf()

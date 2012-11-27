@@ -12,7 +12,7 @@ public:
 	//输出		下载成功或失败
 	//执行下载
 	bool DownloadByFile(char *url,TCHAR *filename,long timeout);
-	bool DownLoadByMemory(char *url, long timeout);
+	bool DownLoadByMemory(TCHAR*downUrl, long timeout);
 	bool Download(CURL * curl,char* url,long timeout);
 
 

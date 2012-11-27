@@ -1,7 +1,7 @@
 #pragma once
 #include "SingleDownload.h"
 #include "MultiDownload.h"
-
+#include "ConfigMgr.h"
 typedef enum ClientType
 {
 	SERVER,//解析服务器xml
@@ -81,5 +81,7 @@ private:
 	//下载线程
 	static UINT MyUpdateDownLoadThread(LPVOID lpParam);
 	UINT MyUpdateDownLoadThreadProc();
+private:
+	CConfigMgr m_ConfigMgr;
 
 };
