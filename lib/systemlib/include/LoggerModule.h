@@ -65,6 +65,9 @@ public:
 	void Trace(const char* filename, const int fileline, const char* pFormat,... );
 
 
+
+
+
 public:
 	static inline LoggerModule* getSingletonPtr()
 	{
