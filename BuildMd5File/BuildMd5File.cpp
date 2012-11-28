@@ -19,43 +19,6 @@ CWinApp theApp;
 using namespace std;
 
 
-void   filesearch(string path,int layer)   
-{   
-	struct _finddata_t filefind;
-	string curr=path+"\\*.*";
-	int   done=0,i,handle;   
-	if((handle=_findfirst(curr.c_str(),&filefind))==-1)
-		return; 
-
-	while(!(done=_findnext(handle,&filefind)))   
-	{   
-		printf("--%s\n",filefind.name);
-		if(!strcmp(filefind.name,"..")){
-
-			continue;
-		}
-
-		for(i=0;i<layer;i++)
-			cout<<"     "; 
-
-
-
-
-		if   ((_A_SUBDIR==filefind.attrib))   
-		{           
-			printf("----------%s\n",filefind.name);    
-			
-			cout<<filefind.name<<"(dir)"<<endl;   
-			curr=path+"\\"+filefind.name;   
-			filesearch(curr,layer+1);   
-		}   
-		else     
-		{   
-			cout<<filefind.name<<endl;   
-		}   
-	}           
-	_findclose(handle);               
-} 
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
