@@ -352,22 +352,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CsysFile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CsysPath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Environment.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GlobalFunction.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MultiDownload.h"
 				>
 			</File>
@@ -381,10 +365,6 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdString.h"
 				>
 			</File>
 			<File

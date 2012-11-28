@@ -9,10 +9,15 @@ CStatMd5Dir::CStatMd5Dir(void)
 
 CStatMd5Dir::~CStatMd5Dir(void)
 {
+	list<LPSERVER_XML_INFO>::iterator Iter; 
+	list<LPSERVER_XML_INFO>::iterator EndIter = m_fileLst.end(); 
+	for ( Iter = m_fileLst.begin(); Iter!=m_fileLst.end();  ) 
+	{
+		delete *Iter;
+		Iter = m_fileLst.erase(Iter++);
+	}
 
 }
-
-
 
 
 
@@ -23,25 +28,24 @@ bool CStatMd5Dir::ProcessFile(const char *filename)
 	_finddata_t fileinfo; 
 	long hFile  = _findfirst(filename,&fileinfo);
 	
-	//cout<<"fileinfo.name "<<fileinfo.name<<" fileinfo.size "<<fileinfo.size<<endl;
 	string szfilename(filename);
 
-	//cout<<szfilename << "  " <<GetMd5Value(szfilename.c_str())<<endl;
 	cout<<"deal with "<<szfilename<<endl;
 	char szbuf[MAX_PATH]={0};
 	LPSERVER_XML_INFO lpServerXmlInfo = new SERVER_XML_INFO;
 	memset(lpServerXmlInfo,0,sizeof(SERVER_XML_INFO));
 	string szFilename(filename);
+	string_replace(szFilename,m_currDirectory,"");
 	
-	lpServerXmlInfo->fileName = string_replace(szFilename,m_currDirectory,"").substr(1);
-	lpServerXmlInfo->url = URL + lpServerXmlInfo->fileName;
-	lpServerXmlInfo->md5 = GetMd5Value(szfilename.c_str());
+	//lpServerXmlInfo->fileName =szdd;//sztmp.c_str();//.substr(1);//szFilename;//.substr(1);//.substr(1);
+	sprintf_s(lpServerXmlInfo->fileName,MAX_PATH, "%s",szFilename.substr(1));
+	sprintf_s(lpServerXmlInfo->url ,MAX_PATH,"%s%s",URL , lpServerXmlInfo->fileName);
+	sprintf_s(lpServerXmlInfo->md5,MAX_PATH,"%s",GetMd5Value(szfilename.c_str()));
 	lpServerXmlInfo->size =fileinfo.size;
 	lpServerXmlInfo->needRestart = true;
 
 	m_fileLst.push_back(lpServerXmlInfo);
 
-	
 	return CBrowseDir::ProcessFile(filename);
 
 }
@@ -103,7 +107,6 @@ string CStatMd5Dir::GetMd5Value(const char* file)
 	}
 	if(WaitForSingleObject(pi.hProcess, INFINITE)==WAIT_FAILED)
 	{
-//		MessageBox("Failed!");
 		return NULL;
 	}
 	CloseHandle(hWrite);
@@ -141,20 +144,27 @@ void CStatMd5Dir::BuildXmlInfo()
 	pFile = fopen("updatexml.xml","wb");
 	if (!pFile)
 		return;
-	m_Xmlbuf = m_Xmlbuf + XMLHEAD + NEWLINEA;
-	m_Xmlbuf = m_Xmlbuf + SERVER_XML_BEGIN_SERVER_FILES + NEWLINEA;
-	list<LPSERVER_XML_INFO>::iterator Iter;
 	char szbuf[MAX_PATH]= {0};
+	SYSTEMTIME st;
+	::GetLocalTime(&st);
+	char buf[32];
+	sprintf_s(buf,32,"%04d%02d%02d%02d%02d%02d", st.wYear, st.wMonth, st.wDay,st.wHour,st.wMinute,st.wSecond);
+	sprintf_s(szbuf,MAX_PATH,SERVER_XML_BEGIN_SERVER_FILES,buf);
+	m_Xmlbuf = m_Xmlbuf + XMLHEAD + NEWLINEA;
+	m_Xmlbuf = m_Xmlbuf + szbuf + NEWLINEA;
+	list<LPSERVER_XML_INFO>::iterator Iter;
+	
 	for (Iter = m_fileLst.begin();Iter!=m_fileLst.end();++Iter)
 	{
 		LPSERVER_XML_INFO lpFileInfo = (LPSERVER_XML_INFO)*Iter;
+		
 		sprintf(szbuf,SERVER_XML_SERVER_FILES_INFO,
-			lpFileInfo->fileName.c_str(),
-			lpFileInfo->url.c_str(),
-			lpFileInfo->lastVersion.c_str(),
+			lpFileInfo->fileName,
+			lpFileInfo->url,
+			lpFileInfo->lastVersion,
 			lpFileInfo->size,
 			lpFileInfo->needRestart,
-			lpFileInfo->md5.c_str());
+			lpFileInfo->md5);
 		m_Xmlbuf = m_Xmlbuf + szbuf + NEWLINEA;
 		ZeroMemory(szbuf,MAX_PATH);
 	}

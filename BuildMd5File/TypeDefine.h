@@ -4,11 +4,11 @@
 
 typedef struct _STR_SERVER_XML_INFO
 {
-	string fileName;
-	string lastVersion;
-	string url;
+	char fileName[MAX_PATH];
+	char lastVersion[20];
+	char url[MAX_PATH];
 	int size;
-	string md5;
+	char md5[MAX_PATH];
 	bool needRestart;
 
 

@@ -444,7 +444,8 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 				DWORD dwErr = CsysFile::SysGetlastError();
 				string srtMsg = CsysFile::ErrMsgA(dwErr);
 				g_Logger.Error(__FILE__,__LINE__,"CopyFile %s,wsOldFile %s wsOldFile_Bak %s",srtMsg.c_str(),ws2s(wsOldFile).c_str(),ws2s(wsOldFile_Bak).c_str());
-				break;
+				//break;
+				//continue;
 			}
 
 			bRet = CsysFile::Copy(wsNewFile ,wsOldFile );
@@ -453,7 +454,8 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 				DWORD dwErr = CsysFile::SysGetlastError();
 				string srtMsg = CsysFile::ErrMsgA(dwErr);
 				g_Logger.Error(__FILE__,__LINE__,"CopyFile %s wsNewFile %s wsOldFile %s",srtMsg.c_str(),ws2s(wsNewFile).c_str(),ws2s(wsOldFile).c_str());
-				break;
+				//break;
+				//continue;
 			}
 
 
@@ -525,7 +527,10 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 {
 //	Update();
 	bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),100);
-	
+	if (false == bRet)
+	{
+		return 1;
+	}
 	//wstring wsUpdatefolder = UPDATEFOLDER + s2ws(m_serverUpdateTime);
 	MULTI_DOWNLOAD_INFO* lpDownLoadInfo = m_UpdateList[0];
 	wstring wsConfigPath;

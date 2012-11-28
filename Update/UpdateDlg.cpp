@@ -183,31 +183,31 @@ void CUpdateDlg::Init()
 	
 	//UpdateMgr.ParseLocalXml()
 	UPDATE_ERROR UpdateErrCode = (UPDATE_ERROR)m_UpdateMgr.IsNeedUpdate();
-	switch(UpdateErrCode)
-	{
-	case NEEDUPDATE:
-		{
- 			vector<MULTI_DOWNLOAD_INFO*> UpdateLst = m_UpdateMgr.GetUpdateList();
- 			vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
- 			for (Iter = UpdateLst.begin();Iter != UpdateLst.end();++Iter)
- 			{
- 				LPMULTI_DOWNLOAD_INFO lpUpdateInfo = (MULTI_DOWNLOAD_INFO*)*Iter;
- 				//m_txtUpdateLst+=lpServerXmlInfo->fileName.c_str();
-				m_txtUpdateLst+=lpUpdateInfo->filename;
- 				m_txtUpdateLst+=NEWLINE;
- 			}
- 			//UpdateMgr.Update();
-			break;
-		}
-	}
-	CStringArray arrUpdateLst;
-	m_UpdateMgr.GetUpdateList(arrUpdateLst);
-	for (int i=0,sz=arrUpdateLst.GetSize();i<sz;i++)
-	{
-		m_UpdateLst.AddString(arrUpdateLst.GetAt(i));
-	}
-	m_UpdateLst.SetCurSel(0);
-	UpdateData(FALSE);
+	////switch(UpdateErrCode)
+	////{
+	////case NEEDUPDATE:
+	////	{
+ ////			vector<MULTI_DOWNLOAD_INFO*> UpdateLst = m_UpdateMgr.GetUpdateList();
+ ////			vector<MULTI_DOWNLOAD_INFO*>::iterator Iter;
+ ////			for (Iter = UpdateLst.begin();Iter != UpdateLst.end();++Iter)
+ ////			{
+ ////				LPMULTI_DOWNLOAD_INFO lpUpdateInfo = (MULTI_DOWNLOAD_INFO*)*Iter;
+ ////				//m_txtUpdateLst+=lpServerXmlInfo->fileName.c_str();
+	////			m_txtUpdateLst+=lpUpdateInfo->filename;
+ ////				m_txtUpdateLst+=NEWLINE;
+ ////			}
+ ////			//UpdateMgr.Update();
+	////		break;
+	////	}
+	////}
+	////CStringArray arrUpdateLst;
+	////m_UpdateMgr.GetUpdateList(arrUpdateLst);
+	////for (int i=0,sz=arrUpdateLst.GetSize();i<sz;i++)
+	////{
+	////	m_UpdateLst.AddString(arrUpdateLst.GetAt(i));
+	////}
+	////m_UpdateLst.SetCurSel(0);
+	////UpdateData(FALSE);
 
 	
 
@@ -219,8 +219,7 @@ void CUpdateDlg::Init()
 
 
 LRESULT CUpdateDlg::OnUpdateResult(WPARAM wParam,LPARAM lParam){
-	AfxMessageBox(L"下载成功。是否更新文件？");
-	//m_UpdateMgr.UpdateFiles()
+	
 	TCHAR* pUpdateFolder = (TCHAR*)wParam;
 	int nCurSel=0;
 	int nIndex = m_UpdateMgr.GetUpdateFolderIndex(pUpdateFolder);
@@ -236,17 +235,24 @@ LRESULT CUpdateDlg::OnUpdateResult(WPARAM wParam,LPARAM lParam){
 		nCurSel = nIndex ;
 	}
 
-	
+
 	CString strValue ;
 	CString strUpdateFolder;
 	if (nCurSel!=-1)
 		m_UpdateLst.GetText(nCurSel,strValue);
 	else
 		m_UpdateLst.GetText(nCurSel,strValue);
-	
+
 	strUpdateFolder.Format(_T("%s%s"),UPDATEFOLDER,strValue);
-	m_UpdateMgr.UpdateFiles(strUpdateFolder.GetBuffer());
+
+	int Res = ::MessageBox(AfxGetMainWnd()->m_hWnd,L"下载成功。是否更新文件？", L"信息", MB_YESNO | MB_ICONQUESTION);
+	if(Res == IDYES)
+	{
+
+		//m_UpdateMgr.UpdateFiles()
 	
+		m_UpdateMgr.UpdateFiles(strUpdateFolder.GetBuffer());
+	}
 	return 0;
 }
 

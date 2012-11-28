@@ -209,7 +209,7 @@ static void init(CURLM *cm, MULTI_DOWNLOAD_INFO* info)
 
 bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount,long sametimecount,long timeout)
 {
- CURLM *cm;
+	CURLM *cm;
 	CURLMsg *msg;
 	long L;
 	unsigned int C=0;
@@ -298,14 +298,11 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 			else {
 				fprintf(stderr, "E: CURLMsg (%d)\n", msg->msg);
 			}
-// 			if(C<lstInfo.size())
-// 			{
-// 				init(cm,lstInfo[C++]);
-// 				U++;
-// 			}
+
 		}
 	}
 
+	BOOL bALlFlage=TRUE;
 	vector<LPMULTI_DOWNLOAD_INFO>::iterator Iter;
 	for (Iter=lstInfo.begin();Iter!=lstInfo.end();++Iter)
 	{
@@ -313,7 +310,9 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 		
 		if(lpDownInfo->result != true)
 		{
-			AfxMessageBox(_T("fail"));
+			wstring wsfilename(lpDownInfo->filename);
+			wsfilename = wsfilename + L"下载失败";
+			//AfxMessageBox(wsfilename.c_str());
 		}
 		fclose(lpDownInfo->fp);
 		lpDownInfo->fp = NULL;
@@ -322,8 +321,12 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 
 	curl_multi_cleanup(cm);
 	curl_global_cleanup();
+	if (bALlFlage)
+	{
+		return true;
+	}
+	return false;
 	
-	return true;
 }
 
 //MULTI_DOWNLOAD_INFO	N个结构体

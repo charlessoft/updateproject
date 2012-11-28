@@ -22,6 +22,7 @@ using namespace std;
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
+	//_CrtSetBreakAlloc(3158);
 	int nRetCode = 0;
 
 	// initialize MFC and print and error on failure
