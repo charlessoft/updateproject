@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "ConfigMgr.h"
-#include "stdString.h"
-#include "Environment.h"
+//#include "stdString.h"
+//#include "Environment.h"
 
 CConfigMgr::CConfigMgr(void)
 {

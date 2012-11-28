@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "Update.h"
 #include "UpdateDlg.h"
-#include "Environment.h"
-#include "CsysPath.h"
+//#include "Environment.h"
+//#include "CsysPath.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

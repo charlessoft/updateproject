@@ -194,30 +194,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CsysFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CsysPath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Environment.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\GlobalFunction.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\MultiDownload.cpp"
 				>
 				<FileConfiguration
@@ -258,18 +234,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\stdString.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
 					/>
 				</FileConfiguration>
 			</File>

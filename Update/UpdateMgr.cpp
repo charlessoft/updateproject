@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "UpdateMgr.h"
 #include "SingleDownload.h"
-#include "Environment.h"
-#include "CsysFile.h"
-#include "CsysPath.h"
+//#include "Environment.h"
+//#include "CsysFile.h"
+//#include "CsysPath.h"
 CUpdateMgr::CUpdateMgr(void)
 {
 	//m_Map.insert(pair<string,string>(FILE_PATH,""));

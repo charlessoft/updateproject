@@ -56,7 +56,7 @@
 #include <vector>
 #include <list>
 #include <map>
-#include "stdString.h"
+
 using namespace std;
 
 #include <atlbase.h>
@@ -64,7 +64,10 @@ using namespace std;
 #include "tinyxml/tinystr.h"
 #include "tinyxml/tinyxml.h"
 
-
+#include "../lib/systemlib/include/stdString.h"
+#include "../lib/systemlib/include/Environment.h"
+#include "../lib/systemlib/include/CsysPath.h"
+#include "../lib/systemlib/include/CsysFile.h"
 #include "../lib/systemlib/include/log.h"
 #include "../lib/systemlib/include/ExceptionHandler.h"
 #include "../lib/systemlib/include/LoggerModule.h"
