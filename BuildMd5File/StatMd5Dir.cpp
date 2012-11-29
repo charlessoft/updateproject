@@ -1,10 +1,14 @@
 #include "StdAfx.h"
 #include "StatMd5Dir.h"
 #include <io.h>
+extern CONFIGINFO g_config;
 CStatMd5Dir::CStatMd5Dir(void)
 {
 
-
+	m_ExceptMap.insert(pair<string,int>("BuildMd5File.exe",1));
+	m_ExceptMap.insert(pair<string,int>("fciv.exe",1));
+	m_ExceptMap.insert(pair<string,int>("BuildMd5File.ini",1));
+	
 }
 
 CStatMd5Dir::~CStatMd5Dir(void)
@@ -19,9 +23,6 @@ CStatMd5Dir::~CStatMd5Dir(void)
 
 }
 
-
-
-
 bool CStatMd5Dir::ProcessFile(const char *filename)
 {
 	WIN32_FIND_DATA ffd ;
@@ -29,18 +30,25 @@ bool CStatMd5Dir::ProcessFile(const char *filename)
 	long hFile  = _findfirst(filename,&fileinfo);
 	
 	string szfilename(filename);
+	map<string,int>::iterator Iter;
+	string tmpfilename = CsysPath::GetFileName(szfilename);
+	Iter = m_ExceptMap.find(tmpfilename);
+	if (Iter != m_ExceptMap.end())
+	{
+		return CBrowseDir::ProcessFile(filename);
+	}
 
 	cout<<"deal with "<<szfilename<<endl;
 	char szbuf[MAX_PATH]={0};
 	LPSERVER_XML_INFO lpServerXmlInfo = new SERVER_XML_INFO;
 	memset(lpServerXmlInfo,0,sizeof(SERVER_XML_INFO));
 	string szFilename(filename);
-	string_replace(szFilename,m_currDirectory,"");
 	
-	//lpServerXmlInfo->fileName =szdd;//sztmp.c_str();//.substr(1);//szFilename;//.substr(1);//.substr(1);
-	sprintf_s(lpServerXmlInfo->fileName,MAX_PATH, "%s",szFilename.substr(1));
-	sprintf_s(lpServerXmlInfo->url ,MAX_PATH,"%s%s",URL , lpServerXmlInfo->fileName);
-	sprintf_s(lpServerXmlInfo->md5,MAX_PATH,"%s",GetMd5Value(szfilename.c_str()));
+	string_replace(szFilename,m_currDirectory,"");
+	sprintf_s(lpServerXmlInfo->fileName,MAX_PATH, "%s",szFilename.substr(1).c_str());
+	sprintf_s(lpServerXmlInfo->url ,MAX_PATH,"%s%s",g_config.url.c_str() , lpServerXmlInfo->fileName);
+	sprintf_s(lpServerXmlInfo->md5,MAX_PATH,"%s",GetMd5Value(szfilename.c_str()).c_str());
+
 	lpServerXmlInfo->size =fileinfo.size;
 	lpServerXmlInfo->needRestart = true;
 
@@ -141,7 +149,7 @@ void CStatMd5Dir::BuildXmlInfo()
 {
 	SetCurrentDirectoryA(m_currDirectory.c_str());
 	FILE* pFile = NULL;
-	pFile = fopen("updatexml.xml","wb");
+	pFile = fopen(UPDATESERVERXMLFILE,"wb");
 	if (!pFile)
 		return;
 	char szbuf[MAX_PATH]= {0};

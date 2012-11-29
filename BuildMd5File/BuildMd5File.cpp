@@ -19,6 +19,39 @@ CWinApp theApp;
 using namespace std;
 
 
+CONFIGINFO g_config;
+
+void FormatConfigInfo(string& pData)
+{
+	int nPos = pData.rfind('#');
+	if (nPos>=0)
+	{
+		pData=	pData.substr(0,nPos);
+	}
+	trimstr(pData);
+
+}
+
+void GetConfigInfo(CONFIGINFO* pConfigInfoStruct )
+{
+	string szConfinIniPath;
+	CEnvironment::Env_GetCurrentDirectory(szConfinIniPath);
+	szConfinIniPath = szConfinIniPath + "\\" + UPDATECONFIGA;
+	
+	if (_access(szConfinIniPath.c_str(),0)==-1)
+	{
+		printf("没有找到配置文件,退出");
+		//g_Logger.Error(__FILE__,__LINE__,"没有找到配置文件,退出");
+		exit(0);
+	}
+	char url[MAX_PATH]={0};
+	GetPrivateProfileStringA(OPTION,SERVERADDRESS,"",url,MAX_PATH,szConfinIniPath.c_str());
+	pConfigInfoStruct->url=url;
+	FormatConfigInfo(pConfigInfoStruct->url);
+	printf("pConfigInfoStruct->url %s\r\n",pConfigInfoStruct->url.c_str());
+	
+}
+
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
@@ -35,15 +68,18 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	else
 	{
 		// TODO: code your application's behavior here.
-		//filesearch("E:\\yirong_Workspaces\\updateproject\\SystemLib",2);
+		
+		memset(&g_config,0,sizeof(CONFIGINFO));
+		GetConfigInfo(&g_config);
 		CStatMd5Dir m_md5file;
-		//m_md5file.SetInitDir("");
+	
 		string strCurDirectory;
 		CEnvironment::Env_GetCurrentDirectory(strCurDirectory);
+		printf("Env_GetCurrentDirectory %s\r\n",strCurDirectory.c_str());
 		m_md5file.SetInitDir(strCurDirectory.c_str());
 		m_md5file.BeginBrowse("*.*");
 		m_md5file.BuildXmlInfo();
 	}
-
+	//system("pause");
 	return nRetCode;
 }

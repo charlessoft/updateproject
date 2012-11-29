@@ -12,9 +12,13 @@ mkdir "%PackPath%"
 
 cd ../
 PATH=C:\Program Files\Microsoft Visual Studio 8\Common7\IDE\;%PATH%
-rem devenv Update.sln /Clean "Release|Win32" /project "Update"
-rem devenv Update.sln /Build "Release|Win32" /project "Update"
+devenv Update.sln /Clean "Release|Win32" /project "Update"
+devenv Update.sln /Build "Release|Win32" /project "Update"
 copy "release\Update.exe" "public\%PackPath%"
 copy "Update\update.config" "public\%PackPath%"
 copy "Update\UPDATE_properties" "public\%PackPath%"
 copy "Update\UpdateConfig.ini" "public\%PackPath%"
+
+
+
+

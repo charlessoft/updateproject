@@ -168,15 +168,28 @@ static void init(CURLM *cm, MULTI_DOWNLOAD_INFO* info)
 	char *progress_data = "* ";
 
 	FILE *outfile;
-	//outfile = fopen("C:\\add.exe", "wb");
-	//pfile[i]=fopen("C:")
-	//MyFileInfo[i].pfile = fopen(MyFileInfo[i].szName,"wb");
-	//MyFileInfo[i].process_data=MyFileInfo[i].szName;
+	
 	TCHAR szbuf[MAX_PATH]={0};
+
 	_stprintf(szbuf,_T("%s%s"),info->fileSavePath,info->filename);
+	wstring strDirectoryName = CsysPath::GetDirectoryName(szbuf);
+	strDirectoryName+=L"\\";
+	if(_taccess(CsysPath::GetDirectoryName(szbuf).c_str(),0)==-1)
+	{
+		BOOL bRet = MakeSureDirectoryPathExists(ws2s(strDirectoryName).c_str());
+		if (!bRet)
+		{
+			DWORD dwErr = GetLastError();
+			string strMsg;
+			CGlobalFunction::AfxFormatMessageA(dwErr,strMsg);
+			g_Logger.Error(__FILE__,__LINE__,"创建文件夹失败 dw=%ld,msg=%s %s",dwErr,strMsg.c_str(),szbuf);
+			return;
+		}
+	}
 	info->fp = _tfopen(szbuf,_T("wb"));
 	if (info->fp==NULL)
 	{
+		g_Logger.Error(__FILE__,__LINE__,"创建文件失败");
 		return;
 	}
 	info->process_data =info->filename;
@@ -314,8 +327,12 @@ bool MultiDownload::Download(vector<MULTI_DOWNLOAD_INFO*> lstInfo,long infocount
 			wsfilename = wsfilename + L"下载失败";
 			//AfxMessageBox(wsfilename.c_str());
 		}
-		fclose(lpDownInfo->fp);
-		lpDownInfo->fp = NULL;
+		if (lpDownInfo->fp)
+		{
+			fclose(lpDownInfo->fp);
+			lpDownInfo->fp = NULL;
+		}
+		
 		//fclose(((LPMULTI_DOWNLOAD_INFO)*Iter)->fp);
 	}
 

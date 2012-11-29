@@ -35,6 +35,7 @@ int CUpdateMgr::IsNeedUpdate()
 
 bool CUpdateMgr::DownLoadServerUpdateXmlFile()
 {
+	g_Logger.Debug(__FILE__,__LINE__,"下载服务端UpdateXml文件 DownLoadServerUpdateXmlFile");
 	LPCONFIGINFO lpConfigInfo = m_ConfigMgr.GetConfigInfo();
 	return m_SingleDownLoad.DownLoadByMemory((TCHAR*)lpConfigInfo->url.c_str(),5);
 	//return m_SingleDownLoad.DownLoadByMemory(UPDATEXMLA,5);
@@ -47,18 +48,28 @@ string CUpdateMgr::GetServerUpdateXmlBuf()
 
 
 //void CUpdateMgr::ParseXml(string xml)
-void CUpdateMgr::ParseXml(string xml,ClientType nClientType,ParseType nParseType)
+bool CUpdateMgr::ParseXml(string xml,ClientType nClientType,ParseType nParseType)
 {
+	g_Logger.Debug(__FILE__,__LINE__,"ParseXml %s,ClientType = %d,ParseType=%d",xml.c_str(),nClientType,nParseType);
+	bool bRet=true;
 	TiXmlDocument doc;//( "demo.xml" );
 	switch(nParseType)
 	{
 	case PARSE_TYPE_FILE:
-		doc.LoadFile(xml);
-		break;
+		{
+			bRet = doc.LoadFile(xml);
+			if (false == bRet)
+			{
+				g_Logger.Debug(__FILE__,__LINE__,"加载文件失败 %s",xml.c_str());
+				return bRet;
+			}
+			break;
+		}
 	case PARSE_TYPE_MEMORY:
 		doc.Parse(xml.c_str());
 		break;;
 	}
+	
 
 	
 	//TiXmlElement xmlElement = doc.GetChar()
@@ -79,7 +90,6 @@ void CUpdateMgr::ParseXml(string xml,ClientType nClientType,ParseType nParseType
 }
 void CUpdateMgr::ParseServerXml(TiXmlNode* xmlNode)
 {
-
 	ClearServerXmlMap();
  	LPSERVER_XML_INFO lpServerXmlInfo = NULL;
 	while(xmlNode)
@@ -97,9 +107,7 @@ void CUpdateMgr::ParseServerXml(TiXmlNode* xmlNode)
 			}
 			else
 			{
-				//g_Logger.Debug(__FILE__,__LINE__,"TiXmlNode::TINYXML_ELEMENT");
 				TiXmlElement *pp= xmlNode->ToElement();
-				//string strValue = pchild->ValueStr();
 				string str = xmlNode->ToElement()->Value();
 
 				string strValue;
@@ -128,7 +136,7 @@ void CUpdateMgr::ParseServerXml(TiXmlNode* xmlNode)
 
 }
 
-void CUpdateMgr::ParseLocalXml(TiXmlNode* xmlNode)
+bool CUpdateMgr::ParseLocalXml(TiXmlNode* xmlNode)
 {
 	ClearLocalXmlMap();
  	LPLOCAL_XML_INFO lpLocalXmlInfo = NULL;
@@ -149,7 +157,6 @@ void CUpdateMgr::ParseLocalXml(TiXmlNode* xmlNode)
 			pp->QueryValueAttribute(FILE_PATH,&lpLocalXmlInfo->fileName);
  			pp->QueryValueAttribute(FILE_LASTVER,&lpLocalXmlInfo->lastVersion);
  			pp->QueryValueAttribute(FILE_MD5,&lpLocalXmlInfo->md5);
-
 			m_MapLocalXmlInfo.insert(pair<string,LOCAL_XML_INFO*>(lpLocalXmlInfo->fileName,lpLocalXmlInfo));
 
 			// 			TiXmlText *pTxt  = pchild->ToText();
@@ -162,6 +169,7 @@ void CUpdateMgr::ParseLocalXml(TiXmlNode* xmlNode)
 		xmlNode = xmlNode->NextSibling();                                          
 
 	}
+	return true;
 }
 
 
@@ -194,15 +202,13 @@ void CUpdateMgr::ClearLocalXml_Tmp()
 	for(Iter=m_LocalXmlTmpList.begin();Iter!=m_LocalXmlTmpList.end();++Iter)
 	{
 		delete *Iter;
+		Iter = m_LocalXmlTmpList.erase(Iter++);
 	}
 	m_LocalXmlTmpList.clear();
 }
 
 void CUpdateMgr::WriteLocxlXmlFile(TCHAR* path,list<LOCAL_XML_INFO*> localXmlList)
 {
-	//string szCurDirectory;
-	//CEnvironment::Env_GetCurrentDirectory(szCurDirectory);
-	//string Updateconfig = szCurDirectory + "\\" + LOCALXMLCONFIGA;
 	wstring wsPath(path);
 	string Updateconfig =ws2s(wsPath);
 	FILE* pfile;
@@ -222,18 +228,17 @@ void CUpdateMgr::WriteLocxlXmlFile(TCHAR* path,list<LOCAL_XML_INFO*> localXmlLis
 		for (Iter=localXmlList.begin();Iter!=localXmlList.end();++Iter)
 		{
 			LPLOCAL_XML_INFO lpWriteLocalXmlInfo = (LPLOCAL_XML_INFO)*Iter;
-			strBuf.Format(_T(LOCAL_XML_DETAIL_INFO),s2ws(lpWriteLocalXmlInfo->fileName).c_str(),s2ws(lpWriteLocalXmlInfo->lastVersion).c_str(),lpWriteLocalXmlInfo->size,s2ws(lpWriteLocalXmlInfo->md5).c_str());
-			//myFile.Write(strBuf,strBuf.GetLength()*sizeof(TCHAR));
-			//myFile.Write(NEWLINE,lstrlen(NEWLINE)*sizeof(TCHAR));
+			strBuf.Format(_T(LOCAL_XML_DETAIL_INFO),
+				s2ws(lpWriteLocalXmlInfo->fileName).c_str(),
+				s2ws(lpWriteLocalXmlInfo->lastVersion).c_str(),
+				lpWriteLocalXmlInfo->size,
+				s2ws(lpWriteLocalXmlInfo->md5).c_str());
 
 			fwrite(ws2s(strBuf.GetBuffer(0)).c_str(),sizeof(char),strBuf.GetLength(),pfile);
 			fwrite(NEWLINEA,sizeof(char),strlen(NEWLINEA),pfile);
 		}
-		//myFile.Write(LOCAL_XML_END_UPDATEFILELIST,lstrlen(LOCAL_XML_END_UPDATEFILELIST)*sizeof(TCHAR));
 		fwrite(LOCAL_XML_END_UPDATEFILELIST,sizeof(char),strlen(LOCAL_XML_END_UPDATEFILELIST),pfile);
 		fclose(pfile);
-		//myFile.Close();
-
 
 	}
 
@@ -277,7 +282,6 @@ BOOL CUpdateMgr::Update()
 {
 
 	AfxBeginThread(MyUpdateDownLoadThread,this);
-	//bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),10);
 
 	return TRUE;
 }
@@ -297,6 +301,7 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 	if (true == DownLoadServerUpdateXmlFile())
 	{
 		string ServerXml = m_SingleDownLoad.GetMemBuf();
+		g_Logger.Debug(__FILE__,__LINE__,"解析服务器端xml文件 %s",ServerXml.c_str());
 		ParseXml(ServerXml,SERVER,PARSE_TYPE_MEMORY);
 	}
 #ifdef _UNICODE
@@ -312,6 +317,8 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 	BOOL bAppendLst=FALSE;
 	CString strCurDirectory;
 	ClearLocalXml_Tmp();
+	g_Logger.Debug(__FILE__,__LINE__,"m_MapServerXmlInfo Count %d",m_MapServerXmlInfo.size());
+	g_Logger.Debug(__FILE__,__LINE__,"m_MapLocalXmlInfo Count %d",m_MapLocalXmlInfo.size());
 	for(ServerIter = m_MapServerXmlInfo.begin(); ServerIter != m_MapServerXmlInfo.end(); ServerIter++)
 	{
 		SERVER_XML_INFO* lpSerXmlInfo =(SERVER_XML_INFO*)ServerIter->second;
@@ -324,6 +331,10 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			if(strcmp(lpSerXmlInfo->md5.c_str(),lpLocalXmlInfo->md5.c_str())!=0)
 			{
 				bAppendLst = TRUE;
+			}
+			else
+			{
+				g_Logger.Debug(__FILE__,__LINE__,"md5 值一致不需要加入更新列表 %s",lpLocalXmlInfo->fileName.c_str());
 			}
 		}
 		else
@@ -361,6 +372,8 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 			lpNewLocalXmlInfo->lastVersion=lpSerXmlInfo->lastVersion;
 			lpNewLocalXmlInfo->md5=lpSerXmlInfo->md5;
 			lpNewLocalXmlInfo->size=lpSerXmlInfo->size;	
+
+			g_Logger.Debug(__FILE__,__LINE__,"加入更新列表,%s",lpNewLocalXmlInfo->fileName);
 			m_LocalXmlTmpList.push_back(lpNewLocalXmlInfo);
 
 			m_UpdateList.push_back(lpMultiDownLoad);
@@ -371,11 +384,27 @@ UINT CUpdateMgr::MyCheckUpdateThreadProc()
 
 	if (m_UpdateList.size()>0)
 	{
-
-		MakeSureDirectoryPathExists(W2A(strCurDirectory.GetBuffer(0)));
-		//return NEEDUPDATE;
+		BOOL bRet = MakeSureDirectoryPathExists(W2A(strCurDirectory.GetBuffer(0)));
+		if (!bRet)
+		{
+			DWORD dwErr = GetLastError();
+			string strMsg;
+			CGlobalFunction::AfxFormatMessageA(dwErr,strMsg);
+			g_Logger.Debug(__FILE__,__LINE__,"创建更新目录 失败 dwErr=%ld,Msg=%s,strCurDirectory=%s",dwErr,strMsg.c_str(), W2A(strCurDirectory.GetBuffer()));
+		}
+		else
+		{
+			g_Logger.Debug(__FILE__,__LINE__,"创建更新目录 成功 %s", W2A(strCurDirectory.GetBuffer()));
+		}
+		
+		return SendMessage(AfxGetMainWnd()->m_hWnd, UM_UPDATE,NULL,NULL);
 	}
-	return SendMessage(AfxGetMainWnd()->m_hWnd, UM_UPDATE,NULL,NULL);
+	else
+	{
+		//没有需要更新的文件,程序退出
+		return SendMessage(AfxGetMainWnd()->m_hWnd,WM_CLOSE,NULL,NULL);
+	}
+	
 	//return DO_NOT_NEEDUPDATE;
 }
 
@@ -430,7 +459,6 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 
 		
 		TCHAR* pStrbuf = UpdateFileBuf;
-		//memcpy(pStrbuf,strBuf.GetBuffer(0),strBuf.GetLength()*2);
 		TCHAR* token = _tcstok(pStrbuf, _T("\r\n"));
 
 		while( token != NULL )
@@ -443,7 +471,7 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 			{
 				DWORD dwErr = CsysFile::SysGetlastError();
 				string srtMsg = CsysFile::ErrMsgA(dwErr);
-				g_Logger.Error(__FILE__,__LINE__,"CopyFile %s,wsOldFile %s wsOldFile_Bak %s",srtMsg.c_str(),ws2s(wsOldFile).c_str(),ws2s(wsOldFile_Bak).c_str());
+				g_Logger.Error(__FILE__,__LINE__,"旧版文件备份失败 %s,wsOldFile %s wsOldFile_Bak %s",srtMsg.c_str(),ws2s(wsOldFile).c_str(),ws2s(wsOldFile_Bak).c_str());
 				//break;
 				//continue;
 			}
@@ -453,9 +481,8 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 			{
 				DWORD dwErr = CsysFile::SysGetlastError();
 				string srtMsg = CsysFile::ErrMsgA(dwErr);
-				g_Logger.Error(__FILE__,__LINE__,"CopyFile %s wsNewFile %s wsOldFile %s",srtMsg.c_str(),ws2s(wsNewFile).c_str(),ws2s(wsOldFile).c_str());
-				//break;
-				//continue;
+				g_Logger.Error(__FILE__,__LINE__,"新版文件覆盖旧版文件 失败 %s wsNewFile %s wsOldFile %s",srtMsg.c_str(),ws2s(wsNewFile).c_str(),ws2s(wsOldFile).c_str());
+				
 			}
 
 
@@ -466,57 +493,6 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 		delete []UpdateFileBuf;
 		
 
-	//	for (Iter=m_UpdateList.begin();Iter!=m_UpdateList.end();++Iter)
-	//	{
-
-	//		wstring wsNewDownloadSourceFile; //新版本文件
-	//		wstring wsOldSourceFile; //旧版本文件
-	//		wstring wsOldDestPath; //保存旧版文件路径
-	//		wstring wsConfigPath; //旧的配置文件路径
-	//		LPMULTI_DOWNLOAD_INFO lpMultiDownLoadInfo = (LPMULTI_DOWNLOAD_INFO)*Iter;
-	//		wsSavePath = lpMultiDownLoadInfo->fileSavePath;
-	//		wsOldDestPath += lpMultiDownLoadInfo->fileSavePath;
-	//		wsOldDestPath += lpMultiDownLoadInfo->filename;
-	//		wsOldDestPath += _T("_BAK");
-
-	//		wsConfigPath = lpMultiDownLoadInfo->fileSavePath;
-	//		wsConfigPath += LOCALXMLCONFIG;
-	//		wsConfigPath += _T("_BAK");
-
-
-	//		wsNewDownloadSourceFile += lpMultiDownLoadInfo->fileSavePath;
-	//		wsNewDownloadSourceFile += lpMultiDownLoadInfo->filename;
-
-	//		wsOldSourceFile += lpMultiDownLoadInfo->filename;
-
-	//		bRet = CsysFile::Copy(wsOldSourceFile,wsOldDestPath);
-	//		if (!bRet)
-	//		{
-	//			DWORD dwErr = CsysFile::SysGetlastError();
-	//			string srtMsg = CsysFile::ErrMsgA(dwErr);
-	//			g_Logger.Error(__FILE__,__LINE__,"CopyFile %s",srtMsg.c_str());
-
-	//		}
-
-	//		bRet = CsysFile::Copy(wsNewDownloadSourceFile,wsOldSourceFile);
-	//		if (!bRet)
-	//		{
-	//			DWORD dwErr = CsysFile::SysGetlastError();
-	//			string srtMsg = CsysFile::ErrMsgA(dwErr);
-	//			g_Logger.Error(__FILE__,__LINE__,"MoveFile %s sourceFile=%s",srtMsg.c_str(),wsNewDownloadSourceFile);
-	//		}
-
-	//		//复制本地配置文件到更新的备份目录
-	//		bRet = CsysFile::Copy(LOCALXMLCONFIG,wsConfigPath);
-	//		if (!bRet)
-	//		{
-	//			DWORD dwErr = CsysFile::SysGetlastError();
-	//			string srtMsg = CsysFile::ErrMsgA(dwErr);
-	//			g_Logger.Error(__FILE__,__LINE__,"LOCALXML %s sourceFile=%s",srtMsg.c_str(),wsNewDownloadSourceFile);
-	//		}
-
-	//	}
-	//	WriteLocxlXmlFile((TCHAR*)wsSavePath.c_str(),m_LocalXmlTmpList);
 	}
 
 	return 1;
@@ -526,7 +502,7 @@ BOOL CUpdateMgr::UpdateFiles(TCHAR* path)
 UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 {
 //	Update();
-	bool bRet = m_MultiDownLoad.Download(m_UpdateList,m_UpdateList.size(),m_UpdateList.size(),100);
+	bool bRet = m_MultiDownLoad.Download(m_UpdateList,(long)m_UpdateList.size(),(long)m_UpdateList.size(),100);
 	if (false == bRet)
 	{
 		return 1;
@@ -558,7 +534,7 @@ UINT CUpdateMgr::MyUpdateDownLoadThreadProc()
 		{
 			WORD unicode = 0xFEFF;  //这句重要
 			myFile.Write(&unicode,2);  //这句重要
-			myFile.Write(wsbuf.c_str(),wsbuf.length()*sizeof(TCHAR));
+			myFile.Write(wsbuf.c_str(),(int)wsbuf.length()*sizeof(TCHAR));
 			myFile.Close();
 		}		
 

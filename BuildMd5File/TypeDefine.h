@@ -14,11 +14,19 @@ typedef struct _STR_SERVER_XML_INFO
 
 }SERVER_XML_INFO,*LPSERVER_XML_INFO;
 
+typedef struct _STR_CONFIG
+{
+	string url;
+}CONFIGINFO,*LPCONFIGINFO;
 
 
-#define  URL		"http://10.142.49.127/MYUPDATE/"
-#define	 NEWLINEA	"\r\n"
-#define  XMLHEAD	"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+#define UPDATECONFIGA			"BuildMd5File.ini"
+
+
+#define  UPDATESERVERXMLFILE	"updateservice.xml"
+#define  URL					"http://10.142.49.127/MYUPDATE/"
+#define	 NEWLINEA				"\r\n"
+#define  XMLHEAD				"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 
 
 
@@ -26,5 +34,11 @@ typedef struct _STR_SERVER_XML_INFO
 #define  SERVER_XML_END_SERVER_FILES "</Server_Files>"
 
 #define  SERVER_XML_SERVER_FILES_INFO "<file path=\"%s\"  url=\"%s\" lastver=\"%s\" size=\"%ld\" needRestart=\"%d\" md5=\"%s\" />"
+
+
+//≈‰÷√Œƒº˛
+#define OPTION "OPTION"
+	#define SERVERADDRESS "SERVERADDRESS"
+
 
 #endif //_TYPEDEFINE_H_

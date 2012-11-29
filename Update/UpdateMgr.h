@@ -29,7 +29,7 @@ public:
 public:
 	~CUpdateMgr(void);
 	//解析xml 
-	void ParseXml(string xml,ClientType nClientType,ParseType nParseType);
+	bool ParseXml(string xml,ClientType nClientType,ParseType nParseType);
 	bool DownLoadServerUpdateXmlFile();
 
 	//是否需要更新
@@ -44,31 +44,36 @@ public:
 
 	//获取更新列表
 	vector<MULTI_DOWNLOAD_INFO*> GetUpdateList(){return m_UpdateList;}
-
+	
+	//返回备份的文件
 	void RestoreFile(wstring strRestorePath,wstring strCurDirectory);
-	void GetUpdateList(CStringArray& arr);
 
+	void GetUpdateList(CStringArray& arr);
+	
+	//获取更新文件夹索引
 	int GetUpdateFolderIndex(wstring pUpdateFolder);
 
 private:
 	void ParseServerXml(TiXmlNode* xmlNode);
-	void ParseLocalXml(TiXmlNode* xmlNode);
+	bool ParseLocalXml(TiXmlNode* xmlNode);
 	
 private:
 	void ClearServerXmlMap();
 	void ClearLocalXmlMap();
 	void ClearLocalXml_Tmp();
+	//把更新的信息写入到local xml中
 	void WriteLocxlXmlFile(TCHAR* path,list<LOCAL_XML_INFO*> localXmlList);
 private:
 	list<SERVER_XML_INFO*> m_SerXmlList;
 	list<LOCAL_XML_INFO*> m_LocalXmlList;
-	list<LOCAL_XML_INFO*> m_LocalXmlTmpList;
-	map<string,SERVER_XML_INFO*> m_MapServerXmlInfo;
-	map<string,LOCAL_XML_INFO*> m_MapLocalXmlInfo;
+	list<LOCAL_XML_INFO*> m_LocalXmlTmpList;			//记录本地更新的列表,
+	map<string,SERVER_XML_INFO*> m_MapServerXmlInfo;	//保存服务端xml信息.
+	map<string,LOCAL_XML_INFO*> m_MapLocalXmlInfo;		//保存本地xml信息,与服务器进行匹配
 
-	vector<MULTI_DOWNLOAD_INFO*> m_UpdateList;
+	vector<MULTI_DOWNLOAD_INFO*> m_UpdateList;			//待更新的文件
 
-	string m_serverUpdateTime;
+	string m_serverUpdateTime;	//记录服务器更新时间
+
 	//单个文件和多个文件下载
 	CSingleDownload m_SingleDownLoad;
 	MultiDownload	m_MultiDownLoad;

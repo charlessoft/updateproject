@@ -1,6 +1,7 @@
 #pragma once
 #include "BrowseDir.h"
 #include "TypeDefine.h"
+#include <map>
 class CStatMd5Dir :public CBrowseDir
 {
 public:
@@ -24,4 +25,5 @@ private:
 	string GetMd5Value(const char* file);
 	string m_currDirectory;
 	string m_Xmlbuf;
+	map<string,int> m_ExceptMap;//不包含的文件列表
 };
